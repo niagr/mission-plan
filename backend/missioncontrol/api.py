@@ -19,7 +19,9 @@ def health_check(request):
 
 @api_view(['GET'])
 def get_tasks(request):
-    return APIResponse(status=200, data={'tasks': services.get_tasks()})
+    tasks = services.get_tasks()
+    tasks = [{'name': t.name, 'desc': t.description} for t in tasks]
+    return APIResponse(status=200, data={'tasks': tasks})
 
 
 @api_view(['POST'])

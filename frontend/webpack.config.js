@@ -4,12 +4,12 @@ const HtmlWebpackPlugin = require("html-webpack-plugin")
 
 module.exports = {
     mode: 'development',
-	entry: ["./src/index.js"],
+	entry: ["babel-polyfill", "./src/index.js"],
 	output: {
 		filename: "bundle.js",
 		path: path.resolve(__dirname, "dist"),
 	},
-	devtool: 'source-map',
+	devtool: 'eval-source-map',
 	module: {
 		rules: [
             {
@@ -17,7 +17,8 @@ module.exports = {
                 use: {
                     loader: 'babel-loader',
                     options: {
-                        presets: ['@babel/preset-env', '@babel/preset-react']
+						presets: ['@babel/preset-react'],
+						plugins: ['@babel/plugin-proposal-class-properties']
                     }
                 }
             },
