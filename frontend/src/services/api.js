@@ -8,7 +8,7 @@ export class APIError extends Error {
 
 class APIService {
 
-    rootUrl = 'http://localhost:8000/api'
+    rootUrl = `${process.env.API_URL}/api`
 
     defaultErrMsg = 'Something went wrong'
 
@@ -34,7 +34,8 @@ class APIService {
                 throw new APIError(respData.userMsg, respData)
             }
         } catch (e) {
-            if (e instanceof TypeError) {
+            // catch network errors and JSON parse errors
+            if (e instanceof TypeError || e instanceof SyntaxError) {
                 throw new APIError(this.defaultErrMsg)
             } else {
                 throw e
