@@ -4,7 +4,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin")
 
 module.exports = {
     mode: 'development',
-	entry: ["babel-polyfill", "./src/index.js"],
+	entry: ["./src/index.js"],
 	output: {
 		filename: "bundle.js",
 		path: path.resolve(__dirname, "dist"),
@@ -18,7 +18,10 @@ module.exports = {
                     loader: 'babel-loader',
                     options: {
 						presets: ['@babel/preset-react'],
-						plugins: ['@babel/plugin-proposal-class-properties']
+						plugins: [
+							'@babel/plugin-proposal-class-properties', 
+							'@babel/plugin-proposal-object-rest-spread'
+						]
                     }
                 }
             },
@@ -26,14 +29,7 @@ module.exports = {
 				test: /\.(css|sass|scss)$/,
 				use: [
 					"style-loader",
-					{
-						loader: "css-loader",
-						options: {
-							modules: true,
-							localIdentName: '[local]_[hash:base64:5]',
-						}
-					},
-					"sass-loader"
+					"css-loader",
 				]
 			},
 			{
