@@ -18,13 +18,23 @@ from django.urls import path, include
 
 from missioncontrol import api
 
+
+task_id_urls = [
+    path('change-status', api.change_task_status)
+]
+
+task_api_urls = [
+    path('new', api.create_task),
+    path('list', api.get_tasks),
+    path('<str:task_id>/', include(task_id_urls)),
+]
+
 api_urls = [
-    path('tasks', api.get_tasks),
-    path('task/new', api.create_task),
+    path('task/', include(task_api_urls)),
 ]
 
 urlpatterns = [
     path('healthcheck', api.health_check),
-    path('admin/', admin.site.urls),
+    path('admin', admin.site.urls),
     path('api/', include(api_urls))
 ]

@@ -11,6 +11,9 @@ module.exports = {
 		path: path.resolve(__dirname, "dist"),
 	},
 	devtool: 'eval-source-map',
+	resolve: {
+		modules: [path.join(__dirname,  'src'), 'node_modules'],
+	},
 	module: {
 		rules: [
             {
@@ -21,7 +24,8 @@ module.exports = {
 						presets: ['@babel/preset-react'],
 						plugins: [
 							'@babel/plugin-proposal-class-properties', 
-							'@babel/plugin-proposal-object-rest-spread'
+							'@babel/plugin-proposal-object-rest-spread',
+							"babel-plugin-styled-components",
 						]
                     }
                 }

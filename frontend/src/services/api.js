@@ -44,7 +44,7 @@ class APIService {
     }
 
     async getTasks () {
-        const tasks = (await this._apiCall('GET', '/tasks')).tasks
+        const tasks = (await this._apiCall('GET', '/task/list')).tasks
         return tasks
     }
 

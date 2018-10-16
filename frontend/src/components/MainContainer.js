@@ -1,66 +1,40 @@
 import React from  'react'
+import styled from 'styled-components'
+import {Provider, connect} from 'react-redux'
 
-import TaskCard from './TasksCard'
+import Board from './Board'
 
+import {store} from 'store'
+import {loadTasks} from 'store/actions'
 import {apiService, APIError} from '../services/api'
 
-export default class MainContainer extends React.Component {
-
-    constructor (props) {
-        super(props)
-        this.state = {
-            tasks: undefined,
-            error: undefined,
-        }
-    }
+class MainContainer extends React.Component {
 
     componentDidMount() {
-        this.loadTasks()
-    }
-
-    async loadTasks () {
-        try{
-            const tasks = await apiService.getTasks()
-            this.setState({tasks})
-        } catch (e) {
-            if (e instanceof APIError) {
-                this.setState({error: e})
-            } else {
-                throw e
-            }
-        }
+        store.dispatch(loadTasks())
     }
 
     render () {
-        const {tasks=[], error} = this.state
         return (
-            <div style={styles.container}>
-                {error ? 
-                    <span>Error: {error.userMsg}</span>
-                :    
-                    tasks.map((t, i) => 
-                        <TaskCard 
-                            key={`task${i}`}
-                            style={{marginBottom: '5px'}} 
-                            name={t.name} 
-                            desc={t.desc} 
-                        />
-                    )
-                }
-            </div>
+            <Provider store={store}>
+                <Container>
+                    <Board/>
+                </Container>
+            </Provider>
         )
 
     }
 
 }
 
-const styles = {
-    container: {
-        height: '100vh',
-        width: '100vw',
-        padding: '20px',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'stretch',
-    }
-}
+
+const Container = styled.div`
+    height: 100vh;
+    width: 100vw;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+`
+
+export default MainContainer

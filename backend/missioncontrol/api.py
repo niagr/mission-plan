@@ -1,3 +1,4 @@
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
@@ -32,3 +33,14 @@ def create_task(request):
         return APIResponse(status=400, user_msg="'name' and 'desc' params are required.")
     new_task = services.create_task(name, desc)
     return APIResponse(status=201, data={'taskId': new_task.id}, user_msg='Task created.')
+
+
+@api_view(['POST'])
+def change_task_status(request, task_id):
+    to_status = request.POST.get('toStatus')
+    try:
+        services.change_task_status(task_id, to_status)
+    except services.TaskStatusError as ex:
+        return APIResponse(status=400, user_msg=str(ex))
+    return APIResponse(status=200, user_msg='Task status changed successfully', data={'ok': True})
+
