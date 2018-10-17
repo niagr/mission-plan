@@ -19,14 +19,9 @@ from django.urls import path, include
 from missioncontrol import api
 
 
-task_id_urls = [
-    path('change-status', api.change_task_status)
-]
-
 task_api_urls = [
-    path('new', api.create_task),
-    path('list', api.get_tasks),
-    path('<str:task_id>/', include(task_id_urls)),
+    path('', api.TaskListAPIView.as_view()),
+    path('<str:task_id>', api.TaskAPIView.as_view()),
 ]
 
 api_urls = [

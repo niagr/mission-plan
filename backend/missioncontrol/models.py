@@ -15,3 +15,13 @@ class Task(models.Model):
     name = models.TextField()
     description = models.TextField()
     status = models.CharField(max_length=20, choices=tuple(STATUS_CHOICES.items()), default=STATUS_PENDING)
+
+    @classmethod
+    def is_status_valid(cls, status):
+        return status in cls.STATUS_CHOICES
+
+    def to_json(self):
+        return {'id': self.id,
+                'name': self.name,
+                'desc': self.description,
+                'status': self.status}
