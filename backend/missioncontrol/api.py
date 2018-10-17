@@ -62,7 +62,7 @@ class TaskAPIView(APIView):
         if status:
             task.status = status
         task.save()
-        return APIResponse(status=200, user_msg='Task updated.')
+        return APIResponse(status=200, data={'task': task.to_json()}, user_msg='Task updated.')
 
 
 
