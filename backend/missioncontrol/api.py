@@ -24,10 +24,20 @@ def health_check(request):
 class TaskListAPIView(APIView):
 
     def get(self, request):
+        """
+        Get list of tasks
+        :return APIResponse 200 Array of task objects
+        """
         tasks = services.get_tasks()
         return APIResponse(status=200, data={'tasks': tasks})
 
     def post(self, request):
+        """
+        Create new task
+        :return: APIResponse:
+                    200 The new task object
+                    400 Wrong params
+        """
         name = request.POST.get('name')
         desc = request.POST.get('desc')
         if not all([name, desc]):
@@ -39,6 +49,13 @@ class TaskListAPIView(APIView):
 class TaskAPIView(APIView):
 
     def get(self, request, task_id):
+        """
+        Gets the task with the specified ID
+        :param task_id: ID of the task to retrieve
+        :return: APIResponse:
+                    200 The task object
+                    404 If the task with specified ID does not exist
+        """
         try:
             task = Task.objects.get(id=task_id)
             return APIResponse(status=200, data={'task': task.to_json()})
@@ -46,6 +63,15 @@ class TaskAPIView(APIView):
             return APIResponse(status=404, user_msg='Task not found')
 
     def put(self, request, task_id):
+        """
+        Modify a task.
+        POST params: name, desc, status
+        :param task_id: ID of the task to modify
+        :return: APIResponse:
+                    200 The updated task
+                    400 Wrong params
+                    404 If the task with specified ID does not exist
+        """
         name = request.data.get('name')
         desc = request.data.get('desc')
         status = request.data.get('status')
