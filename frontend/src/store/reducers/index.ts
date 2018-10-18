@@ -1,25 +1,5 @@
-import { LOAD_TASKS, CHANGE_TASK_STATUS } from 'store/actions'
-import { GLOBAL_ERROR} from '../actions'
-
-export interface Task {
-  id: number
-  name: string
-  desc: string
-  status: STATUS
-}
-
-export enum STATUS {
-  PENDING = 'PENDING', 
-  IN_PROGRESS = 'IN_PROGRESS',
-  REVIEW = 'REVIEW', 
-  DONE ='DONE'
-}
-
-export interface State {
-  statusColumns: STATUS[]
-  tasks: Task[],
-  error: string | undefined
-}
+import {State, Task, STATUS} from 'types'
+import { LOAD_TASKS, CHANGE_TASK_STATUS, GLOBAL_ERROR } from 'store/actions'
 
 const initState: State = {
   statusColumns: [STATUS.PENDING, STATUS.IN_PROGRESS, STATUS.REVIEW, STATUS.DONE],

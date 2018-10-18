@@ -1,19 +1,20 @@
 import React from 'react'
 import { connect } from 'react-redux'
+import {Dispatch} from 'redux'
 import styled from 'styled-components'
 import {DragDropContext, DragSource, DropTarget, DragSourceCollector, ConnectDragSource, DragSourceSpec, DropTargetSpec, DropTargetCollector, ConnectDropTarget} from 'react-dnd'
 import HTML5Backend from 'react-dnd-html5-backend'
 
-import {store} from 'store'
+import {Task, STATUS, State, anyobject} from 'types'
 import {changeTaskStatus} from 'store/actions'
-import {Task, STATUS, State} from 'store/reducers'
 
 import TaskCard from './TasksCard'
 
 
 interface BoardProps {
-  tasks: Task[]
-  statusColumns: STATUS[]
+  tasks?: Task[]
+  statusColumns?: STATUS[]
+  onTaskDropped?: (taskId: number, status: STATUS) => void
 }
 
 type StatusColumns = {[status in STATUS]?: Task[]}
@@ -32,7 +33,7 @@ class Board extends React.Component<BoardProps> {
   }
 
   render() {
-    const { tasks=[], statusColumns=[]} = this.props
+    const { tasks=[], statusColumns=[], onTaskDropped=()=>null} = this.props
     const statusCards = this.mapTasksToCols(tasks, statusColumns)
     const numRows = Math.max(...Object.values(statusCards).map(s => s ? s.length: 0))
     return (
@@ -50,8 +51,14 @@ class Board extends React.Component<BoardProps> {
         }
         )}
         {statusColumns.map((status, i) => 
-          <DroppableOverlay key={'overlay' + i} col={i} status={status} numRows={numRows} /> )
-        }
+          <DroppableOverlay 
+            key={'overlay' + i} 
+            col={i} 
+            status={status} 
+            numRows={numRows}
+            onDropped={onTaskDropped}
+          /> 
+        )}
       </Container>
     )
   }
@@ -137,14 +144,14 @@ const Overlay = styled.div<OverlayProps>`
 const dropTargetSpec: DropTargetSpec<DroppableOverlayProps> = {
   drop (props, monitor) {
     const sourceItem = monitor.getItem()
-    store.dispatch(changeTaskStatus(sourceItem.taskId, props.status))
+    props.onDropped(sourceItem.taskId, props.status)
     return {
       status: props.status,
     }
   }
 }
 
-const dropTargetCollect: DropTargetCollector<DroppableOverlayCpllectedProps> = (connect, monitor) => ({
+const dropTargetCollect: DropTargetCollector<any> = (connect, monitor) => ({
   connectDropTarget: connect.dropTarget(),
   isOver: monitor.isOver()
 })
@@ -154,15 +161,11 @@ interface DroppableOverlayProps {
   col: number
   numRows: number
   status: STATUS
+  onDropped(taskId: number, status: STATUS): void
 }
 
-interface DroppableOverlayCpllectedProps {
-  connectDropTarget?: ConnectDropTarget
-  isOver?: boolean
-}
-
-@DropTarget<DroppableOverlayProps, DroppableOverlayCpllectedProps>(DRAGGABLE, dropTargetSpec, dropTargetCollect)
-class DroppableOverlay extends React.Component<DroppableOverlayProps & Partial<DroppableOverlayCpllectedProps>> {
+@DropTarget<DroppableOverlayProps>(DRAGGABLE, dropTargetSpec, dropTargetCollect)
+class DroppableOverlay extends React.Component<DroppableOverlayProps & anyobject> {
   render () {
     const {connectDropTarget, isOver, children} = this.props
     return (
@@ -185,4 +188,10 @@ function mapStateToProps (state: State, props: BoardProps) {
   }
 }
 
-export default connect(mapStateToProps)(Board) as React.ComponentClass<any>
+function mapDispatchToProps (dispatch: Dispatch, props: BoardProps) {
+  return {
+    onTaskDropped: (taskId: number, status: STATUS) => dispatch(changeTaskStatus(taskId, status))
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Board) as React.ComponentClass<any>

@@ -1,7 +1,7 @@
 import {Dispatch, Action} from 'redux'
 
 import {apiService, APIError} from 'services/api'
-import {STATUS, Task} from 'store/reducers'
+import {STATUS, Task} from 'types'
 
 
 export const LOAD_TASKS = 'LOAD_TASKS'
