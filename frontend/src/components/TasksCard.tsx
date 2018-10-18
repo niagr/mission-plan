@@ -1,18 +1,22 @@
 import React from 'react'
+import styled from 'styled-components'
 
-const TaskCard = ({name, desc, style={}}) =>
-    <div style={{...(styles.container as any), ...style}}>
+interface TaskCardProps {
+    name: string
+    desc: string
+}
+
+const TaskCard = ({name, desc}: TaskCardProps) =>
+    <Container>
         <div>Name: {name}</div>
         <div>Description: {desc}</div>
-    </div>
+    </Container>
 
-const styles = {
-    container: {
-        display: 'flex',
-        flexDirection: 'column',
-        padding: '10px',
-        boxShadow: '#bfbfbf 0px 0px 1px 1px'
-    }
-}
+const Container = styled.div`
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    box-shadow: #bfbfbf 0px 0px 1px 1px;
+`
 
 export default TaskCard
