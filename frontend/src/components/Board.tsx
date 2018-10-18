@@ -9,10 +9,10 @@ import {changeTaskStatus} from 'store/actions'
 
 import TaskCard from './TasksCard'
 
-class Board extends React.Component {
+class Board extends React.Component<any> {
   
   mapTasksToCols(tasks, statusColumns) {
-    const cols = {}
+    const cols: {[status: string]: any[]} = {}
     statusColumns.forEach(status => cols[status] = [])
     for (let task of tasks) {
       if (task.status in cols) {
@@ -47,6 +47,7 @@ class Board extends React.Component {
   }
   
 }
+// @ts-ignore
 Board = DragDropContext(HTML5Backend)(Board)
 
 const Container = styled.div`
@@ -62,7 +63,7 @@ const Container = styled.div`
 const DRAGGABLE = 'DRAGGABLE'
 
 
-const Item = styled.div`
+const Item = styled.div<any>`
     margin: 10px;
     grid-column: ${p => p.col + 1} / span 1;
     grid-row: ${p => p.row + 1} / span 1;
@@ -83,7 +84,7 @@ const dragSourceCollect = (connect, monitor) => ({
   isDragging: monitor.isDragging(),
 })
 
-class DraggableItem extends React.Component {
+class DraggableItem extends React.Component<any> {
   render () {
     const {connectDragSource, isDragging, children} = this.props
     return (
@@ -97,10 +98,11 @@ class DraggableItem extends React.Component {
     )
   }
 }
+// @ts-ignore
 DraggableItem = DragSource(DRAGGABLE, dragSourceSpec, dragSourceCollect)(DraggableItem)
 
 
-const Overlay = styled.div`
+const Overlay = styled.div<any>`
   background: ${p => p.dropMode ? 'blue' : 'green'};
   z-index: 10;
   grid-column: ${p => p.col+1} / span 1;
@@ -122,7 +124,7 @@ const dropTargetCollect = (connect, monitor) => ({
   isOver: monitor.isOver()
 })
 
-class DroppableOverlay extends React.Component {
+class DroppableOverlay extends React.Component<any> {
   render () {
     const {connectDropTarget, isOver, children} = this.props
     return (
@@ -136,6 +138,7 @@ class DroppableOverlay extends React.Component {
     )
   }
 }
+// @ts-ignore
 DroppableOverlay = DropTarget(DRAGGABLE, dropTargetSpec, dropTargetCollect)(DroppableOverlay)
 
 function mapStateToProps (state, props) {

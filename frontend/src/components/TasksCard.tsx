@@ -1,7 +1,7 @@
 import React from 'react'
 
 const TaskCard = ({name, desc, style={}}) =>
-    <div style={{...styles.container, ...style}}>
+    <div style={{...(styles.container as any), ...style}}>
         <div>Name: {name}</div>
         <div>Description: {desc}</div>
     </div>

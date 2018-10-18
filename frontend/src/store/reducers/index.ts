@@ -1,8 +1,28 @@
 import { LOAD_TASKS, CHANGE_TASK_STATUS } from 'store/actions'
 import { GLOBAL_ERROR } from '../actions'
 
-const initState = {
-  statusColumns: ['PENDING', 'IN_PROGRESS', 'REVIEW', 'DONE'],
+interface Task {
+  id: number
+  name: string
+  desc: string
+  status: string
+}
+
+enum STATUS {
+  PENDING = 'PENDING', 
+  IN_PROGRESS = 'IN_PROGRESS',
+  REVIEW = 'REVIEW', 
+  DONE ='DONE'
+}
+
+interface State {
+  statusColumns: STATUS[]
+  tasks: Task[],
+  error: string | undefined
+}
+
+const initState: State = {
+  statusColumns: [STATUS.PENDING, STATUS.IN_PROGRESS, STATUS.REVIEW, STATUS.DONE],
   tasks: [],
   error: undefined,
 }

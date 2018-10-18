@@ -1,5 +1,9 @@
 export class APIError extends Error {
-    constructor (userMsg='', data) {
+
+    userMsg: string
+    data: any
+
+    constructor (userMsg='', data=null) {
         super(userMsg)
         this.userMsg = userMsg
         this.data = data
@@ -12,7 +16,7 @@ class APIService {
 
     defaultErrMsg = 'Something went wrong'
 
-    _fillFormData (data) {
+    _fillFormData (data: {[k: string]: string}) {
         const formData = new FormData()
         for (let [key, val] of Object.entries(data)) {
             formData.append(key, val)
