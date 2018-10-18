@@ -2,6 +2,7 @@ import { LOAD_TASKS, CHANGE_TASK_STATUS } from 'store/actions'
 import { GLOBAL_ERROR } from '../actions'
 
 const initState = {
+  statusColumns: ['PENDING', 'IN_PROGRESS', 'REVIEW', 'DONE'],
   tasks: [],
   error: undefined,
 }

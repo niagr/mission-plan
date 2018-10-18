@@ -9,27 +9,29 @@ import {changeTaskStatus} from 'store/actions'
 
 import TaskCard from './TasksCard'
 
-const DEFAULT_STATUS_COLS = ['PENDING', 'IN_PROGRESS', 'REVIEW', 'DONE']
-
 class Board extends React.Component {
+  
   mapTasksToCols(tasks, statusColumns) {
     const cols = {}
     statusColumns.forEach(status => cols[status] = [])
     for (let task of tasks) {
-      cols[task.status].push(task)
+      if (task.status in cols) {
+        cols[task.status].push(task)
+      }
     }
     return cols
   }
 
   render() {
-    const { tasks, statusColumns = DEFAULT_STATUS_COLS } = this.props
+    const { tasks=[], statusColumns=[]} = this.props
     const statusCards = this.mapTasksToCols(tasks, statusColumns)
     const numRows = Math.max(...Object.values(statusCards).map(s => s.length))
     return (
       <Container>
         {tasks.map((t, i) => {
           const col = statusColumns.indexOf(t.status)
-          const row = statusCards[t.status].indexOf(t)
+          const row = statusCards[t.status] && statusCards[t.status].indexOf(t)
+          if (row == undefined  || col == -1) return null
           return (
             <DraggableItem key={t.name + i} col={col} row={row} data={t}>
               <TaskCard name={t.name} desc={t.desc} />
@@ -43,6 +45,7 @@ class Board extends React.Component {
       </Container>
     )
   }
+  
 }
 Board = DragDropContext(HTML5Backend)(Board)
 
@@ -135,4 +138,12 @@ class DroppableOverlay extends React.Component {
 }
 DroppableOverlay = DropTarget(DRAGGABLE, dropTargetSpec, dropTargetCollect)(DroppableOverlay)
 
-export default connect((state, p) => ({ tasks: state.tasks, ...p })) (Board)
+function mapStateToProps (state, props) {
+  return { 
+    tasks: state.tasks,
+    statusColumns: state.statusColumns,
+    ...props
+  }
+}
+
+export default connect(mapStateToProps)(Board)
