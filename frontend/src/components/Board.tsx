@@ -98,22 +98,19 @@ const dragSourceSpec: DragSourceSpec<DraggableItemProps, {taskId: number}> = {
   },
 }
 
-const dragSourceCollect: DragSourceCollector<DraggableItemCollectedProps> = (connect, monitor) => ({
+const dragSourceCollect: DragSourceCollector<{}> = (connect, monitor) => ({
   connectDragSource: connect.dragSource(),
   isDragging: monitor.isDragging(),
 })
 
 interface DraggableItemProps extends ItemProps {
   data: Task
+  connectDragSource?: ConnectDragSource
+  isDragging?: boolean
 }
 
-interface DraggableItemCollectedProps {
-  connectDragSource: ConnectDragSource
-  isDragging: boolean
-}
-
-@DragSource<DraggableItemProps, DraggableItemCollectedProps>(DRAGGABLE, dragSourceSpec, dragSourceCollect)
-class DraggableItem extends React.Component<DraggableItemProps & Partial<DraggableItemCollectedProps>> {
+@DragSource<DraggableItemProps>(DRAGGABLE, dragSourceSpec, dragSourceCollect)
+class DraggableItem extends React.Component<DraggableItemProps> {
   render () {
     const {connectDragSource, isDragging, children, row, col} = this.props
     return (
@@ -162,10 +159,12 @@ interface DroppableOverlayProps {
   numRows: number
   status: STATUS
   onDropped(taskId: number, status: STATUS): void
+  connectDropTarget?: ConnectDropTarget
+  isOver?: boolean
 }
 
 @DropTarget<DroppableOverlayProps>(DRAGGABLE, dropTargetSpec, dropTargetCollect)
-class DroppableOverlay extends React.Component<DroppableOverlayProps & anyobject> {
+class DroppableOverlay extends React.Component<DroppableOverlayProps> {
   render () {
     const {connectDropTarget, isOver, children} = this.props
     return (
