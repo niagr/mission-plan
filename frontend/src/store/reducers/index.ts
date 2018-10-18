@@ -1,14 +1,14 @@
 import { LOAD_TASKS, CHANGE_TASK_STATUS } from 'store/actions'
 import { GLOBAL_ERROR } from '../actions'
 
-interface Task {
+export interface Task {
   id: number
   name: string
   desc: string
-  status: string
+  status: STATUS
 }
 
-enum STATUS {
+export enum STATUS {
   PENDING = 'PENDING', 
   IN_PROGRESS = 'IN_PROGRESS',
   REVIEW = 'REVIEW', 

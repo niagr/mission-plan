@@ -6,19 +6,27 @@ import HTML5Backend from 'react-dnd-html5-backend'
 
 import {store} from 'store'
 import {changeTaskStatus} from 'store/actions'
+import {Task, STATUS} from 'store/reducers'
 
 import TaskCard from './TasksCard'
 
+
+interface BoardProps {
+  tasks: Task[]
+  statusColumns: STATUS[]
+}
+
+type StatusColumns = {[status in STATUS]?: Task[]}
+
 @DragDropContext(HTML5Backend)
-class Board extends React.Component<any> {
+class Board extends React.Component<BoardProps> {
   
-  mapTasksToCols(tasks, statusColumns) {
-    const cols: {[status: string]: any[]} = {}
+  mapTasksToCols(tasks: Task[], statusColumns: STATUS[]): StatusColumns {
+    const cols: StatusColumns = {}
     statusColumns.forEach(status => cols[status] = [])
     for (let task of tasks) {
-      if (task.status in cols) {
-        cols[task.status].push(task)
-      }
+      const colArray = cols[task.status]
+      colArray && colArray.push(task)
     }
     return cols
   }
@@ -26,12 +34,13 @@ class Board extends React.Component<any> {
   render() {
     const { tasks=[], statusColumns=[]} = this.props
     const statusCards = this.mapTasksToCols(tasks, statusColumns)
-    const numRows = Math.max(...Object.values(statusCards).map(s => s.length))
+    const numRows = Math.max(...Object.values(statusCards).map(s => s ? s.length: 0))
     return (
       <Container>
         {tasks.map((t, i) => {
           const col = statusColumns.indexOf(t.status)
-          const row = statusCards[t.status] && statusCards[t.status].indexOf(t)
+          const column = statusCards[t.status]
+          const row =  column && column.indexOf(t)
           if (row == undefined  || col == -1) return null
           return (
             <DraggableItem key={t.name + i} col={col} row={row} data={t}>
@@ -61,8 +70,12 @@ const Container = styled.div`
 
 const DRAGGABLE = 'DRAGGABLE'
 
+interface ItemProps {
+  row: number
+  col: number
+}
 
-const Item = styled.div<any>`
+const Item = styled.div<ItemProps>`
     margin: 10px;
     grid-column: ${p => p.col + 1} / span 1;
     grid-row: ${p => p.row + 1} / span 1;
@@ -83,14 +96,19 @@ const dragSourceCollect = (connect, monitor) => ({
   isDragging: monitor.isDragging(),
 })
 
+interface DraggableItemProps {
+  connectDragSource?: any
+  isDragging?: boolean
+  data: Task
+}
+
 @DragSource(DRAGGABLE, dragSourceSpec, dragSourceCollect)
-class DraggableItem extends React.Component<any> {
+class DraggableItem extends React.Component<DraggableItemProps & ItemProps> {
   render () {
-    const {connectDragSource, isDragging, children} = this.props
+    const {connectDragSource, isDragging, children, row, col} = this.props
     return (
       <Item 
-        ref={instance => connectDragSource(instance)} 
-        isDragging={isDragging} 
+        ref={instance => connectDragSource(instance)}
         {...this.props}
       >
         {children}
@@ -100,7 +118,13 @@ class DraggableItem extends React.Component<any> {
 }
 
 
-const Overlay = styled.div<any>`
+interface OverlayProps {
+  dropMode: boolean
+  col: number
+  numRows: number
+}
+
+const Overlay = styled.div<OverlayProps>`
   background: ${p => p.dropMode ? 'blue' : 'green'};
   z-index: 10;
   grid-column: ${p => p.col+1} / span 1;
@@ -122,14 +146,23 @@ const dropTargetCollect = (connect, monitor) => ({
   isOver: monitor.isOver()
 })
 
+
+interface DroppableOverlayProps {
+  connectDropTarget?: any
+  isOver?: boolean
+  col: number
+  numRows: number
+  status: STATUS
+}
+
 @DropTarget(DRAGGABLE, dropTargetSpec, dropTargetCollect)
-class DroppableOverlay extends React.Component<any> {
+class DroppableOverlay extends React.Component<DroppableOverlayProps> {
   render () {
     const {connectDropTarget, isOver, children} = this.props
     return (
       <Overlay 
         ref={instance => connectDropTarget(instance)} 
-        dropMode={isOver} 
+        dropMode={isOver || false} 
         {...this.props}
       >
         {children}
