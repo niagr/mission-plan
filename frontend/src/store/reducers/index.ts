@@ -1,5 +1,5 @@
 import { LOAD_TASKS, CHANGE_TASK_STATUS } from 'store/actions'
-import { GLOBAL_ERROR } from '../actions'
+import { GLOBAL_ERROR} from '../actions'
 
 export interface Task {
   id: number
@@ -15,7 +15,7 @@ export enum STATUS {
   DONE ='DONE'
 }
 
-interface State {
+export interface State {
   statusColumns: STATUS[]
   tasks: Task[],
   error: string | undefined
@@ -27,7 +27,7 @@ const initState: State = {
   error: undefined,
 }
 
-export default (state=initState, action) => {
+export default (state=initState, action: any) => {
   switch (action.type) {
   case LOAD_TASKS:
     return {

@@ -1,12 +1,12 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import styled from 'styled-components'
-import {DragDropContext, DragSource, DropTarget} from 'react-dnd'
+import {DragDropContext, DragSource, DropTarget, DragSourceCollector, ConnectDragSource, DragSourceSpec, DropTargetSpec, DropTargetCollector, ConnectDropTarget} from 'react-dnd'
 import HTML5Backend from 'react-dnd-html5-backend'
 
 import {store} from 'store'
 import {changeTaskStatus} from 'store/actions'
-import {Task, STATUS} from 'store/reducers'
+import {Task, STATUS, State} from 'store/reducers'
 
 import TaskCard from './TasksCard'
 
@@ -83,32 +83,35 @@ const Item = styled.div<ItemProps>`
     z-index: 20;
 `
 
-const dragSourceSpec = {
-  beginDrag: props => {
+const dragSourceSpec: DragSourceSpec<DraggableItemProps, {taskId: number}> = {
+  beginDrag: (props) => {
     return {
       taskId: props.data.id
     }
   },
 }
 
-const dragSourceCollect = (connect, monitor) => ({
+const dragSourceCollect: DragSourceCollector<DraggableItemCollectedProps> = (connect, monitor) => ({
   connectDragSource: connect.dragSource(),
   isDragging: monitor.isDragging(),
 })
 
-interface DraggableItemProps {
-  connectDragSource?: any
-  isDragging?: boolean
+interface DraggableItemProps extends ItemProps {
   data: Task
 }
 
-@DragSource(DRAGGABLE, dragSourceSpec, dragSourceCollect)
-class DraggableItem extends React.Component<DraggableItemProps & ItemProps> {
+interface DraggableItemCollectedProps {
+  connectDragSource: ConnectDragSource
+  isDragging: boolean
+}
+
+@DragSource<DraggableItemProps, DraggableItemCollectedProps>(DRAGGABLE, dragSourceSpec, dragSourceCollect)
+class DraggableItem extends React.Component<DraggableItemProps & Partial<DraggableItemCollectedProps>> {
   render () {
     const {connectDragSource, isDragging, children, row, col} = this.props
     return (
       <Item 
-        ref={instance => connectDragSource(instance)}
+        ref={(instance: any) => connectDragSource && connectDragSource(instance)}
         {...this.props}
       >
         {children}
@@ -131,7 +134,7 @@ const Overlay = styled.div<OverlayProps>`
   grid-row: 1 / span ${p => p.numRows};
 `
 
-const dropTargetSpec = {
+const dropTargetSpec: DropTargetSpec<DroppableOverlayProps> = {
   drop (props, monitor) {
     const sourceItem = monitor.getItem()
     store.dispatch(changeTaskStatus(sourceItem.taskId, props.status))
@@ -141,27 +144,30 @@ const dropTargetSpec = {
   }
 }
 
-const dropTargetCollect = (connect, monitor) => ({
+const dropTargetCollect: DropTargetCollector<DroppableOverlayCpllectedProps> = (connect, monitor) => ({
   connectDropTarget: connect.dropTarget(),
   isOver: monitor.isOver()
 })
 
 
 interface DroppableOverlayProps {
-  connectDropTarget?: any
-  isOver?: boolean
   col: number
   numRows: number
   status: STATUS
 }
 
-@DropTarget(DRAGGABLE, dropTargetSpec, dropTargetCollect)
-class DroppableOverlay extends React.Component<DroppableOverlayProps> {
+interface DroppableOverlayCpllectedProps {
+  connectDropTarget?: ConnectDropTarget
+  isOver?: boolean
+}
+
+@DropTarget<DroppableOverlayProps, DroppableOverlayCpllectedProps>(DRAGGABLE, dropTargetSpec, dropTargetCollect)
+class DroppableOverlay extends React.Component<DroppableOverlayProps & Partial<DroppableOverlayCpllectedProps>> {
   render () {
     const {connectDropTarget, isOver, children} = this.props
     return (
       <Overlay 
-        ref={instance => connectDropTarget(instance)} 
+        ref={(instance: any) => connectDropTarget && connectDropTarget(instance)} 
         dropMode={isOver || false} 
         {...this.props}
       >
@@ -171,7 +177,7 @@ class DroppableOverlay extends React.Component<DroppableOverlayProps> {
   }
 }
 
-function mapStateToProps (state, props) {
+function mapStateToProps (state: State, props: BoardProps) {
   return { 
     tasks: state.tasks,
     statusColumns: state.statusColumns,
@@ -179,4 +185,4 @@ function mapStateToProps (state, props) {
   }
 }
 
-export default connect(mapStateToProps)(Board)
+export default connect(mapStateToProps)(Board) as React.ComponentClass<any>

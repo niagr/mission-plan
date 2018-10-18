@@ -1,3 +1,10 @@
+enum METHOD {
+    POST = 'POST',
+    GET = 'GET',
+    PUT = 'PUT',
+    DELETE = 'DELETE',
+}
+
 export class APIError extends Error {
 
     userMsg: string
@@ -24,7 +31,7 @@ class APIService {
         return formData
     }
 
-    async _apiCall (method, url, data={}) {
+    async _apiCall (method: METHOD, url: string, data={}) {
         try {
             const response = await fetch(this.rootUrl + url, {
                 method,
@@ -48,7 +55,7 @@ class APIService {
     }
 
     async getTasks () {
-        const tasks = (await this._apiCall('GET', '/task')).tasks
+        const tasks = (await this._apiCall(METHOD.GET, '/task')).tasks
         return tasks
     }
 
