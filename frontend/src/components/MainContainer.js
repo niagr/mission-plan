@@ -1,32 +1,30 @@
 import React from  'react'
 import styled from 'styled-components'
-import {Provider, connect} from 'react-redux'
+import {Provider} from 'react-redux'
 
 import Board from './Board'
 
 import {store} from 'store'
 import {loadTasks} from 'store/actions'
-import {apiService, APIError} from '../services/api'
 
 class MainContainer extends React.Component {
 
-    componentDidMount() {
-        store.dispatch(loadTasks())
-    }
+  componentDidMount() {
+    store.dispatch(loadTasks())
+  }
 
-    render () {
-        return (
-            <Provider store={store}>
-                <Container>
-                    <Board/>
-                </Container>
-            </Provider>
-        )
+  render () {
+    return (
+      <Provider store={store}>
+        <Container>
+          <Board/>
+        </Container>
+      </Provider>
+    )
 
-    }
+  }
 
 }
-
 
 const Container = styled.div`
     height: 100vh;
