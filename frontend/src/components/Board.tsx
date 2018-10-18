@@ -193,4 +193,4 @@ function mapDispatchToProps (dispatch: Dispatch, props: BoardProps) {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Board) as React.ComponentClass<any>
+export default connect(mapStateToProps, mapDispatchToProps)(Board)
