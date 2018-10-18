@@ -9,6 +9,7 @@ import {changeTaskStatus} from 'store/actions'
 
 import TaskCard from './TasksCard'
 
+@DragDropContext(HTML5Backend)
 class Board extends React.Component<any> {
   
   mapTasksToCols(tasks, statusColumns) {
@@ -47,8 +48,6 @@ class Board extends React.Component<any> {
   }
   
 }
-// @ts-ignore
-Board = DragDropContext(HTML5Backend)(Board)
 
 const Container = styled.div`
   padding: 20px;
@@ -84,6 +83,7 @@ const dragSourceCollect = (connect, monitor) => ({
   isDragging: monitor.isDragging(),
 })
 
+@DragSource(DRAGGABLE, dragSourceSpec, dragSourceCollect)
 class DraggableItem extends React.Component<any> {
   render () {
     const {connectDragSource, isDragging, children} = this.props
@@ -98,8 +98,6 @@ class DraggableItem extends React.Component<any> {
     )
   }
 }
-// @ts-ignore
-DraggableItem = DragSource(DRAGGABLE, dragSourceSpec, dragSourceCollect)(DraggableItem)
 
 
 const Overlay = styled.div<any>`
@@ -124,6 +122,7 @@ const dropTargetCollect = (connect, monitor) => ({
   isOver: monitor.isOver()
 })
 
+@DropTarget(DRAGGABLE, dropTargetSpec, dropTargetCollect)
 class DroppableOverlay extends React.Component<any> {
   render () {
     const {connectDropTarget, isOver, children} = this.props
@@ -138,8 +137,6 @@ class DroppableOverlay extends React.Component<any> {
     )
   }
 }
-// @ts-ignore
-DroppableOverlay = DropTarget(DRAGGABLE, dropTargetSpec, dropTargetCollect)(DroppableOverlay)
 
 function mapStateToProps (state, props) {
   return { 
