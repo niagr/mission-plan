@@ -1,5 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
+import {Card} from 'semantic-ui-react'
 
 interface TaskCardProps {
     name: string
@@ -7,16 +8,6 @@ interface TaskCardProps {
 }
 
 const TaskCard = ({name, desc}: TaskCardProps) =>
-    <Container>
-        <div>Name: {name}</div>
-        <div>Description: {desc}</div>
-    </Container>
-
-const Container = styled.div`
-    display: flex;
-    flex-direction: column;
-    padding: 10px;
-    box-shadow: #bfbfbf 0px 0px 1px 1px;
-`
+    <Card style={{width: 'auto'}} header={name} description={desc} />
 
 export default TaskCard
