@@ -19,13 +19,15 @@ from django.urls import path, include
 from missioncontrol import api
 
 
-task_api_urls = [
-    path('', api.TaskListAPIView.as_view()),
-    path('<str:task_id>', api.TaskAPIView.as_view()),
+board_api_urls = [
+    path('', api.BoardAPIView.as_view()),
+    path('tasks/', api.TaskListAPIView.as_view()),
+    path('task/<str:task_id>/', api.TaskAPIView.as_view()),
 ]
 
 api_urls = [
-    path('task/', include(task_api_urls)),
+    path('boards/', api.BoardListAPIView.as_view()),
+    path('board/<uuid:board_id>/', include(board_api_urls)),
 ]
 
 urlpatterns = [

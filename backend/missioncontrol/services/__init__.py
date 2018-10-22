@@ -4,13 +4,13 @@ from django.db import IntegrityError
 from missioncontrol.models import Task
 
 
-def get_tasks():
-    tasks = Task.objects.all()
+def get_tasks(board_id):
+    tasks = Task.objects.filter(board_id=board_id)
     return [t.to_json() for t in tasks]
 
 
-def create_task(name, desc):
-    return Task.objects.create(name=name, description=desc).to_json()
+def create_task(board_id, name, desc):
+    return Task.objects.create(name=name, description=desc, board_id=board_id).to_json()
 
 
 class TaskStatusError(Exception):

@@ -3,8 +3,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response as DRFResponse
 from rest_framework.views import APIView
 
-from . import services
-from .models import Task
+from .models import Task, Board
 
 
 class APIResponse(DRFResponse):
@@ -23,15 +22,17 @@ def health_check(request):
 
 class TaskListAPIView(APIView):
 
-    def get(self, request):
+    @staticmethod
+    def get(request, board_id):
         """
         Get list of tasks
         :return APIResponse 200 Array of task objects
         """
-        tasks = services.get_tasks()
-        return APIResponse(status=200, data={'tasks': tasks})
+        tasks = Board.get_tasks(board_id)
+        return APIResponse(status=200, data={'tasks': [t.to_json() for t in tasks]})
 
-    def post(self, request):
+    @staticmethod
+    def post(request, board_id):
         """
         Create new task
         :return: APIResponse:
@@ -42,13 +43,17 @@ class TaskListAPIView(APIView):
         desc = request.POST.get('desc')
         if not all([name, desc]):
             return APIResponse(status=400, user_msg="'name' and 'desc' params are required.")
-        new_task = services.create_task(name, desc)
-        return APIResponse(status=201, data={'task': new_task}, user_msg='Task created.')
+        try:
+            new_task = Task.create_task(board_id, name, desc)
+        except ObjectDoesNotExist:
+            return APIResponse(status=404, user_msg=f'Board with ID {board_id} not found')
+        return APIResponse(status=201, data={'task': new_task.to_json()}, user_msg='Task created.')
 
 
 class TaskAPIView(APIView):
 
-    def get(self, request, task_id):
+    @staticmethod
+    def get(request, board_id, task_id):
         """
         Gets the task with the specified ID
         :param task_id: ID of the task to retrieve
@@ -62,7 +67,8 @@ class TaskAPIView(APIView):
         except ObjectDoesNotExist:
             return APIResponse(status=404, user_msg='Task not found')
 
-    def put(self, request, task_id):
+    @staticmethod
+    def put(request, task_id):
         """
         Modify a task.
         POST params: name, desc, status
@@ -78,17 +84,41 @@ class TaskAPIView(APIView):
         if status and not Task.is_status_valid(status):
             return APIResponse(status=400, user_msg=f"'{status}' is not a valid status")
         try:
-            task = Task.objects.get(id=task_id)
+            task = Task.update_task_by_id(task_id, name=name, desc=desc, status=status)
         except ObjectDoesNotExist:
             return APIResponse(status=404, user_msg='Task not found')
-        if name:
-            task.name = name
-        if desc:
-            task.description = desc
-        if status:
-            task.status = status
-        task.save()
         return APIResponse(status=200, data={'task': task.to_json()}, user_msg='Task updated.')
 
 
+class BoardListAPIView(APIView):
 
+    @staticmethod
+    def post(request):
+        name = request.POST.get('name')
+        if not name:
+            return APIResponse(status=400, user_msg="The 'name' param is required")
+        name = name.lower()
+        if not Board.is_name_valid(name):
+            return APIResponse(status=400, user_msg="Invalid name. Board names may contain a-z, 0-9, and a '-' (hyphen)"
+                                                    " anywhere between the first and last characters ")
+        try:
+            board = Board.create_board(name=name)
+        except Board.DuplicateError:
+            return APIResponse(status=400, user_msg="A board with this name already exists")
+        return APIResponse(status=201, user_msg="Board created successfully", data=board.to_json())
+
+    @staticmethod
+    def get(request):
+        boards = Board.get_all_boards()
+        return APIResponse(status=200, data={'boards': [b.to_json() for b in boards]})
+
+
+class BoardAPIView(APIView):
+
+    @staticmethod
+    def get(request, board_id):
+        try:
+            board = Board.get_board(board_id)
+            return APIResponse(status=200, data=board.to_json())
+        except ObjectDoesNotExist:
+            return APIResponse(status=404, user_msg=f'No board with ID {board_id} found')
