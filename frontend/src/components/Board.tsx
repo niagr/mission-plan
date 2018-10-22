@@ -11,6 +11,13 @@ import {changeTaskStatus} from 'store/actions'
 import TaskCard from './TasksCard'
 
 
+const COLUMN_TITLES: {[status in STATUS]: string} = {
+  [STATUS.PENDING]: 'Pending',
+  [STATUS.IN_PROGRESS]: 'In Progress',
+  [STATUS.REVIEW]: 'Review',
+  [STATUS.DONE]: 'Done',
+}
+
 interface BoardProps {
   tasks?: Task[]
   statusColumns?: STATUS[]
@@ -37,25 +44,27 @@ class Board extends React.Component<BoardProps> {
     const statusCards = this.mapTasksToCols(tasks, statusColumns)
     const numRows = Math.max(...Object.values(statusCards).map(s => s ? s.length: 0))
     return (
-      <Container>
+      <Container numCols={statusColumns.length} numRows={numRows}>
+        {statusColumns.map((status, i) => 
+          <ColumnHeader col={i}>{COLUMN_TITLES[status]}</ColumnHeader>
+        )}
         {tasks.map((t, i) => {
           const col = statusColumns.indexOf(t.status)
           const column = statusCards[t.status]
-          const row =  column && column.indexOf(t)
+          // offset of one for the header bar
+          const row =  column && column.indexOf(t) + 1
           if (row == undefined  || col == -1) return null
           return (
             <DraggableItem key={t.name + i} col={col} row={row} data={t}>
               <TaskCard name={t.name} desc={t.desc} />
             </DraggableItem>
           )
-        }
-        )}
+        })}
         {statusColumns.map((status, i) => 
           <DroppableOverlay 
             key={'overlay' + i} 
             col={i} 
-            status={status} 
-            numRows={numRows}
+            status={status}
             onDropped={onTaskDropped}
           /> 
         )}
@@ -65,15 +74,23 @@ class Board extends React.Component<BoardProps> {
   
 }
 
-const Container = styled.div`
+const Container = styled.div<{numCols: number, numRows: number}>`
   padding: 20px;
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
-  grid-template-rows: auto [last-line];
-  grid-gap: 20px;
-  background: pink;
+  grid-template-columns: repeat(${p => p.numCols}, 1fr);
+  grid-template-rows: [header] 100px repeat(${p => (p.numRows < 3 ? 3: p.numRows)}, 100px) [last-line];
+  grid-column-gap: 10px;
 `
 
+const ColumnHeader = styled.div<{col: number}>`
+  padding: 20px;
+  grid-column: ${p => p.col + 1} / span 1;
+  grid-row: 1 / span 1;
+  z-index: 40;
+  text-align: center;
+  font-size: 20px;
+  font-weight: bold;
+`
 
 const DRAGGABLE = 'DRAGGABLE'
 
@@ -86,7 +103,6 @@ const Item = styled.div<ItemProps>`
     margin: 10px;
     grid-column: ${p => p.col + 1} / span 1;
     grid-row: ${p => p.row + 1} / span 1;
-    background: yellow;
     z-index: 20;
 `
 
@@ -128,14 +144,19 @@ class DraggableItem extends React.Component<DraggableItemProps> {
 interface OverlayProps {
   dropMode: boolean
   col: number
-  numRows: number
 }
 
-const Overlay = styled.div<OverlayProps>`
-  background: ${p => p.dropMode ? 'blue' : 'green'};
+const Overlay = styled.div.attrs<OverlayProps>({
+  className: (p: OverlayProps) => p.dropMode && 'drop-mode'
+})`
   z-index: 10;
   grid-column: ${p => p.col+1} / span 1;
-  grid-row: 1 / span ${p => p.numRows};
+  grid-row: 1 / span last-line;
+
+  &.drop-mode {
+    background: rgba(148, 225, 255, 0.16);
+    z-index: 100;
+  }
 `
 
 const dropTargetSpec: DropTargetSpec<DroppableOverlayProps> = {
@@ -156,7 +177,6 @@ const dropTargetCollect: DropTargetCollector<any> = (connect, monitor) => ({
 
 interface DroppableOverlayProps {
   col: number
-  numRows: number
   status: STATUS
   onDropped(taskId: number, status: STATUS): void
   connectDropTarget?: ConnectDropTarget
