@@ -1,29 +1,26 @@
 import React from  'react'
 import styled from 'styled-components'
 import {Provider} from 'react-redux'
+import {BrowserRouter, Route} from 'react-router-dom'
 
 import Board from './Board'
+import BoardList from './BoardList'
 
 import {store} from 'store'
-import {loadTasks} from 'store/actions'
 
 class MainContainer extends React.Component {
-
-  componentDidMount() {
-    store.dispatch(loadTasks())
-  }
-
   render () {
     return (
       <Provider store={store}>
-        <Container>
-          <Board/>
-        </Container>
+        <BrowserRouter>
+          <Container>
+            <Route exact path="/" render={p => <BoardList/>} />
+            <Route path="/board/:boardId" render={p => <Board boardId={p.match.params.boardId} />}/>
+          </Container>
+        </BrowserRouter>
       </Provider>
     )
-
   }
-
 }
 
 const Container = styled.div`

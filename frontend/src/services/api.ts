@@ -54,8 +54,12 @@ class APIService {
         }
     }
 
-    async getTasks () {
-        const tasks = (await this._apiCall(METHOD.GET, '/task')).tasks
+    async getBoards () {
+        return (await this._apiCall(METHOD.GET, '/boards/')).boards
+    }
+
+    async getTasks (boardId: string) {
+        const tasks = (await this._apiCall(METHOD.GET, `/board/${boardId}/tasks/`)).tasks
         return tasks
     }
 

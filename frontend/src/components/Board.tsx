@@ -6,7 +6,7 @@ import {DragDropContext, DragSource, DropTarget, DragSourceCollector, ConnectDra
 import HTML5Backend from 'react-dnd-html5-backend'
 
 import {Task, STATUS, State, anyobject} from 'types'
-import {changeTaskStatus} from 'store/actions'
+import {changeTaskStatus, loadTasks} from 'store/actions'
 
 import TaskCard from './TasksCard'
 
@@ -19,15 +19,21 @@ const COLUMN_TITLES: {[status in STATUS]: string} = {
 }
 
 interface BoardProps {
+  boardId: string
   tasks?: Task[]
   statusColumns?: STATUS[]
   onTaskDropped?: (taskId: number, status: STATUS) => void
+  onLoad?: () => void
 }
 
 type StatusColumns = {[status in STATUS]?: Task[]}
 
 @DragDropContext(HTML5Backend)
 class Board extends React.Component<BoardProps> {
+
+  componentDidMount () {
+    this.props.onLoad && this.props.onLoad()
+  }
   
   mapTasksToCols(tasks: Task[], statusColumns: STATUS[]): StatusColumns {
     const cols: StatusColumns = {}
@@ -46,7 +52,7 @@ class Board extends React.Component<BoardProps> {
     return (
       <Container numCols={statusColumns.length} numRows={numRows}>
         {statusColumns.map((status, i) => 
-          <ColumnHeader col={i}>{COLUMN_TITLES[status]}</ColumnHeader>
+          <ColumnHeader key={'colheader' + i} col={i}>{COLUMN_TITLES[status]}</ColumnHeader>
         )}
         {tasks.map((t, i) => {
           const col = statusColumns.indexOf(t.status)
@@ -186,12 +192,12 @@ interface DroppableOverlayProps {
 @DropTarget<DroppableOverlayProps>(DRAGGABLE, dropTargetSpec, dropTargetCollect)
 class DroppableOverlay extends React.Component<DroppableOverlayProps> {
   render () {
-    const {connectDropTarget, isOver, children} = this.props
+    const {connectDropTarget, isOver, col, children} = this.props
     return (
       <Overlay 
         ref={(instance: any) => connectDropTarget && connectDropTarget(instance)} 
         dropMode={isOver || false} 
-        {...this.props}
+        col={col}
       >
         {children}
       </Overlay>
@@ -209,7 +215,8 @@ function mapStateToProps (state: State, props: BoardProps) {
 
 function mapDispatchToProps (dispatch: Dispatch, props: BoardProps) {
   return {
-    onTaskDropped: (taskId: number, status: STATUS) => dispatch(changeTaskStatus(taskId, status))
+    onTaskDropped: (taskId: number, status: STATUS) => dispatch(changeTaskStatus(taskId, status)),
+    onLoad: () => dispatch(loadTasks(props.boardId) as any)
   }
 }
 

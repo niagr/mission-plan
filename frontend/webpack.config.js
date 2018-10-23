@@ -11,8 +11,12 @@ module.exports = {
   output: {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'dist'),
+    publicPath: '/'
   },
   devtool: 'eval-source-map',
+  devServer: {
+    historyApiFallback: true,
+  },
   resolve: {
     extensions: [ '.tsx', '.ts', '.js' ],
     modules: [path.join(__dirname,  'src'), 'node_modules'],
