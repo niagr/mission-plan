@@ -15,8 +15,10 @@ export default class Header extends React.Component {
 }
 
 const BoringLink = styled(Link)`
-  text-decoration: none;
-  color: inherit;
+  &, &:hover {
+    text-decoration: none;
+    color: inherit;
+  }
 `
 
 const Container = styled.div`
