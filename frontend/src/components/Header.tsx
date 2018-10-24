@@ -1,15 +1,23 @@
 import React from 'react'
 import styled from 'styled-components';
+import { Link } from 'react-router-dom';
 
 export default class Header extends React.Component {
   render () {
     return (
       <Container>
-        <h1>Mission Plan <Sup>alpha</Sup></h1>
+        <BoringLink to="/">
+          <h1>Mission Plan <Sup>alpha</Sup></h1>
+        </BoringLink>
       </Container>
     )
   }
 }
+
+const BoringLink = styled(Link)`
+  text-decoration: none;
+  color: inherit;
+`
 
 const Container = styled.div`
   width: 100%;
