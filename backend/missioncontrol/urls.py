@@ -27,7 +27,7 @@ board_api_urls = [
 
 api_urls = [
     path('boards/', api.BoardListAPIView.as_view()),
-    path('board/<uuid:board_id>/', include(board_api_urls)),
+    path('board/<int:board_id>/', include(board_api_urls)),
 ]
 
 urlpatterns = [

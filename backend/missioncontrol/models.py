@@ -6,7 +6,6 @@ from django.db import models, IntegrityError
 
 
 class Board(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     name = models.TextField(unique=True)
 
     class DuplicateError(IntegrityError):
