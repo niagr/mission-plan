@@ -19,6 +19,7 @@ class BoardList extends React.Component<BoardListProps> {
 
   render () {
     const {boards=[]} = this.props
+    {console.log('RENDERED BoardList') as any && null}
     return (
       <div>
         <ul>

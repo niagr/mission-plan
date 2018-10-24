@@ -58,7 +58,7 @@ class APIService {
         return (await this._apiCall(METHOD.GET, '/boards/')).boards
     }
 
-    async getTasks (boardId: string) {
+    async getTasks (boardId: number) {
         const tasks = (await this._apiCall(METHOD.GET, `/board/${boardId}/tasks/`)).tasks
         return tasks
     }

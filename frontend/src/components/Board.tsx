@@ -1,7 +1,5 @@
 import React from 'react'
-import { connect } from 'react-redux'
 import {Link} from 'react-router-dom'
-import {Dispatch} from 'redux'
 import styled from 'styled-components'
 import {DragDropContext, DragSource, DropTarget, DragSourceCollector, ConnectDragSource, DragSourceSpec, DropTargetSpec, DropTargetCollector, ConnectDropTarget} from 'react-dnd'
 import HTML5Backend from 'react-dnd-html5-backend'
@@ -19,22 +17,23 @@ const COLUMN_TITLES: {[status in STATUS]: string} = {
   [STATUS.DONE]: 'Done',
 }
 
-interface BoardProps {
-  boardId: string
-  tasks?: Task[]
-  statusColumns?: STATUS[]
-  onTaskDropped?: (taskId: number, status: STATUS) => void
-  onLoad?: () => void
+export interface BoardProps {
+  // boardId: string
+  tasks: Task[]
+  statusColumns: STATUS[]
+  onTaskClicked: (taskId: number) => void
+  onTaskDropped: (taskId: number, status: STATUS) => void
+  // onLoad?: () => void
 }
 
 type StatusColumns = {[status in STATUS]?: Task[]}
 
 @DragDropContext(HTML5Backend)
-class Board extends React.Component<BoardProps> {
+export default class Board extends React.Component<BoardProps> {
 
-  componentDidMount () {
-    this.props.onLoad && this.props.onLoad()
-  }
+  // componentDidMount () {
+  //   this.props.onLoad && this.props.onLoad()
+  // }
   
   mapTasksToCols(tasks: Task[], statusColumns: STATUS[]): StatusColumns {
     const cols: StatusColumns = {}
@@ -47,7 +46,7 @@ class Board extends React.Component<BoardProps> {
   }
 
   render() {
-    const { tasks=[], statusColumns=[], onTaskDropped=()=>null, boardId} = this.props
+    const { tasks=[], statusColumns=[], onTaskDropped=()=>null, onTaskClicked} = this.props
     const statusCards = this.mapTasksToCols(tasks, statusColumns)
     const numRows = Math.max(...Object.values(statusCards).map(s => s ? s.length: 0))
     return (
@@ -63,9 +62,9 @@ class Board extends React.Component<BoardProps> {
           if (row == undefined  || col == -1) return null
           return (
             <DraggableItem key={t.name + i} col={col} row={row} data={t}>
-              <Link to={`/board/${boardId}/task/${t.id}`}>
-                <TaskCard name={t.name} desc={t.desc} />
-              </Link>
+              {/* <Link to={`/board/${boardId}/task/${t.id}`}> */}
+                <TaskCard name={t.name} desc={t.desc} onClick={() => onTaskClicked(t.id)} />
+              {/* </Link> */}
             </DraggableItem>
           )
         })}
@@ -207,20 +206,3 @@ class DroppableOverlay extends React.Component<DroppableOverlayProps> {
     )
   }
 }
-
-function mapStateToProps (state: State, props: BoardProps) {
-  return { 
-    tasks: state.tasks,
-    statusColumns: state.statusColumns,
-    ...props
-  }
-}
-
-function mapDispatchToProps (dispatch: Dispatch, props: BoardProps) {
-  return {
-    onTaskDropped: (taskId: number, status: STATUS) => dispatch(changeTaskStatus(taskId, status)),
-    onLoad: () => dispatch(loadTasks(props.boardId) as any)
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Board)

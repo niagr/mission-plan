@@ -5,7 +5,7 @@ import {STATUS, Task} from 'types'
 
 
 export const LOAD_TASKS = 'LOAD_TASKS'
-export function loadTasks (boardId: string) {
+export function loadTasks (boardId: number) {
   return async function (dispatch: Dispatch) {
     // first get rid of existing tasks to avoid stale UI flicker
     dispatch({type: LOAD_TASKS, tasks: []})
