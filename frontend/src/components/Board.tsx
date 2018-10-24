@@ -1,5 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
+import {Link} from 'react-router-dom'
 import {Dispatch} from 'redux'
 import styled from 'styled-components'
 import {DragDropContext, DragSource, DropTarget, DragSourceCollector, ConnectDragSource, DragSourceSpec, DropTargetSpec, DropTargetCollector, ConnectDropTarget} from 'react-dnd'
@@ -46,7 +47,7 @@ class Board extends React.Component<BoardProps> {
   }
 
   render() {
-    const { tasks=[], statusColumns=[], onTaskDropped=()=>null} = this.props
+    const { tasks=[], statusColumns=[], onTaskDropped=()=>null, boardId} = this.props
     const statusCards = this.mapTasksToCols(tasks, statusColumns)
     const numRows = Math.max(...Object.values(statusCards).map(s => s ? s.length: 0))
     return (
@@ -62,7 +63,9 @@ class Board extends React.Component<BoardProps> {
           if (row == undefined  || col == -1) return null
           return (
             <DraggableItem key={t.name + i} col={col} row={row} data={t}>
-              <TaskCard name={t.name} desc={t.desc} />
+              <Link to={`/board/${boardId}/task/${t.id}`}>
+                <TaskCard name={t.name} desc={t.desc} />
+              </Link>
             </DraggableItem>
           )
         })}

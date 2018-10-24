@@ -1,4 +1,4 @@
-import React from  'react'
+import React, {Fragment} from  'react'
 import styled from 'styled-components'
 import {Provider} from 'react-redux'
 import {BrowserRouter, Route} from 'react-router-dom'
@@ -8,6 +8,7 @@ import BoardList from './BoardList'
 import Header from './Header'
 
 import {store} from 'store'
+import TaskViewContainer from './TaskViewContainer';
 
 class MainContainer extends React.Component {
   render () {
@@ -18,7 +19,18 @@ class MainContainer extends React.Component {
             <Header/>
             <Content>
               <Route exact path="/" render={p => <BoardList/>} />
-              <Route path="/board/:boardId" render={p => <Board boardId={p.match.params.boardId} />}/>
+              <Route 
+                path="/board/:boardId" 
+                render={p => 
+                  <Fragment>
+                    <Board boardId={p.match.params.boardId} />
+                    <Route 
+                      path={p.match.path + '/task/:taskId'} 
+                      render={p => <TaskViewContainer taskId={p.match.params.taskId} />} 
+                    />
+                  </Fragment>
+                }
+              />
             </Content>
           </Container>
         </BrowserRouter>

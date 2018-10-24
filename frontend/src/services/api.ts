@@ -63,6 +63,10 @@ class APIService {
         return tasks
     }
 
+    async getTask (boardId: number, taskId: number) {
+        return (await this._apiCall(METHOD.GET, `/board/${boardId}/task/${taskId}/`)).task
+    }
+
 }
 
 export const apiService = new APIService()

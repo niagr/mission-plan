@@ -47,3 +47,12 @@ export function loadBoards () {
     dispatch({type: LOAD_BOARDS, boards})
   }
 }
+
+export const LOAD_TASK = 'LOAD_TASK'
+export function loadTask(boardId: number, taskId: number) {
+  return async function (dispatch: Dispatch) {
+    dispatch({type: LOAD_TASK, task: []})
+    const task = await apiService.getTask(boardId, taskId)
+    dispatch({type: LOAD_TASK, task})
+  }
+}
