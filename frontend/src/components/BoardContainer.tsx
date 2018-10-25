@@ -2,53 +2,41 @@ import React, { ReactNode } from 'react'
 import {Dispatch} from 'redux'
 import {connect} from 'react-redux'
 
-import Board, {BoardProps} from './Board'
+import Board from './Board'
 
-import {State, STATUS, Task, anyobject} from 'types'
+import {State, STATUS} from 'types'
 import {loadTasks, changeTaskStatus} from 'store/actions'
 import ContainerComponent from './ContainerComponent';
-import { withRouter } from 'react-router';
-import {History} from 'history'
+import { withRouter, RouteComponentProps } from 'react-router';
 
-
-interface BoardStateProps {
-  tasks: Task[]
-  statusColumns: STATUS[]
-}
-
-interface BoardDispatchProps {
-  onTaskStatusChanged: (taskId: number, status: STATUS) => void
-  onLoad: () => void
-}
 
 interface BoardOwnProps {
   boardId: number
 }
 
-interface RouterProps {
-  history: History
-}
+type BoardContainerProps =  BoardOwnProps 
+                          & ReturnType<typeof mapStateToProps> 
+                          & ReturnType<typeof mapDispatchToProps> 
+                          & RouteComponentProps
 
-type BoardContainerProps = BoardOwnProps & BoardStateProps & BoardDispatchProps & RouterProps
-
-function mapStateToProps (state: State, props: BoardOwnProps): BoardStateProps {
+function mapStateToProps (state: State, props: BoardOwnProps) {
   return { 
     tasks: state.tasks,
     statusColumns: state.statusColumns,
   }
 }
 
-function mapDispatchToProps (dispatch: Dispatch, props: BoardOwnProps): BoardDispatchProps {
+function mapDispatchToProps (dispatch: Dispatch, props: BoardOwnProps) {
   return {
     onTaskStatusChanged: (taskId: number, status: STATUS) => dispatch(changeTaskStatus(taskId, status)),
     onLoad: () => dispatch(loadTasks(props.boardId) as any),
   }
 }
 
-@connect(mapStateToProps, mapDispatchToProps)
-class _BoardContainer extends React.Component<BoardOwnProps> {
+
+class BoardContainer extends React.Component<BoardContainerProps> {
   render () {
-    const props = this.props as BoardContainerProps
+    const props = this.props
     return (
       <ContainerComponent didMount={props.onLoad}>
         <Board 
@@ -58,10 +46,9 @@ class _BoardContainer extends React.Component<BoardOwnProps> {
           onTaskClicked={taskId => props.history.push(`/board/${props.boardId}/task/${taskId}`)}
         /> 
       </ContainerComponent>
-    ) as ReactNode
+    )
   }
 }
 
-const BoardContainer = withRouter<any>(_BoardContainer)
 
-export default BoardContainer
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(BoardContainer))
