@@ -18,12 +18,10 @@ const COLUMN_TITLES: {[status in STATUS]: string} = {
 }
 
 export interface BoardProps {
-  // boardId: string
   tasks: Task[]
   statusColumns: STATUS[]
   onTaskClicked: (taskId: number) => void
   onTaskDropped: (taskId: number, status: STATUS) => void
-  // onLoad?: () => void
 }
 
 type StatusColumns = {[status in STATUS]?: Task[]}
