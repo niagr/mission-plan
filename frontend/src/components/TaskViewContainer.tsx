@@ -13,7 +13,7 @@ import {History} from 'history'
 const TaskContainer = ({task, history}: {task?: Task, history: History}) =>
   <ContainerComponent>
     <Modal 
-      open
+      open basic
       onClose={() => history.goBack()}
     >
       <Modal.Content>
