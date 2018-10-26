@@ -10,6 +10,6 @@ module.exports = merge(baseConfig, {
     historyApiFallback: true,
   },
   plugins: [
-    new BundleAnalyzerPlugin(),
+    // new BundleAnalyzerPlugin(),
   ]
 })
