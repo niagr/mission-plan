@@ -1,4 +1,5 @@
-import React, {Fragment} from  'react'
+import * as React from  'react'
+import {Fragment} from  'react'
 import styled from 'styled-components'
 import {Provider} from 'react-redux'
 import {BrowserRouter, Route} from 'react-router-dom'

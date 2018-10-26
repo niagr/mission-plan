@@ -4,16 +4,17 @@ const path = require('path')
 
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 module.exports = {
-  mode: 'development',
+  mode: 'production',
   entry: ['./src/index.tsx'],
   output: {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'dist'),
     publicPath: '/'
   },
-  devtool: 'eval-source-map',
+  devtool: 'source-map',
   devServer: {
     historyApiFallback: true,
   },
@@ -55,6 +56,12 @@ module.exports = {
     }),
     new webpack.EnvironmentPlugin({
       API_URL: 'http://localhost:8000',
-    })
+    }),
+    new BundleAnalyzerPlugin(),
+    // new webpack.DefinePlugin({
+    //   'process.env': {
+    //     'NODE_ENV': JSON.stringify('production')
+    //   }
+    // }),
   ]
 }
