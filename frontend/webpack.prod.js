@@ -1,8 +1,6 @@
-const webpack = require('webpack')
-const merge = require('webpack-merge')
+const {createConfig} = require('./webpack.base')
 
-const baseConfig = require('./webpack.base')
-
-module.exports = merge(baseConfig, {
-  mode: 'production'
+module.exports = createConfig({
+  mode: 'production',
+  outputFilename: 'bundle-[contenthash].js',
 })

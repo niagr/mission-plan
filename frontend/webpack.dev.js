@@ -1,11 +1,9 @@
-const merge = require('webpack-merge')
+const {createConfig} = require('./webpack.base')
 
-const baseConfig = require('./webpack.base')
-
-module.exports = merge(baseConfig, {
+module.exports = createConfig({
   mode: 'development',
   devtool: 'source-map',
   devServer: {
     historyApiFallback: true,
-  },
+  }, 
 })
