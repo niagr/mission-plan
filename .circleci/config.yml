@@ -23,10 +23,6 @@ jobs:
             cd frontend
             npm install
             npm run build
-  deploy:
-    docker: # use the docker executor type; machine and macos executors are also supported
-      - image: circleci/python:3.6-stretch-browsers # the primary container, where your job's commands are run
-    steps:
       - run:
           name: Deploy to S3
           command: |
@@ -48,10 +44,5 @@ jobs:
             aws s3 cp /tmp/mission-plan-backend.zip s3://$BEANSTALK_ZIP_S3_BUCKET/
             aws elasticbeanstalk create-application-version --region $BEANSTALK_REGION --application-name $BEANSTALK_APPLICATION_NAME --version-label mission-plan-backend-circle-ci-$CIRCLE_BUILD_NUM --source-bundle S3Bucket="$BEANSTALK_ZIP_S3_BUCKET",S3Key="mission-plan-backend.zip"
             aws elasticbeanstalk update-environment --region $BEANSTALK_REGION --application-name $BEANSTALK_APPLICATION_NAME --environment-name $BEANSTALK_ENV_NAME --version-label mission-plan-backend-circle-ci-$CIRCLE_BUILD_NUM
-workflows:
-  version: 2
-  build_and_deploy:
-    jobs:
-      - build
-      - deploy
+
 
