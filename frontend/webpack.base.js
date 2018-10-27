@@ -52,6 +52,6 @@ module.exports = {
     new webpack.EnvironmentPlugin({
       API_URL: 'http://localhost:8000',
     }),
-    new BundleAnalyzerPlugin(),
+    // new BundleAnalyzerPlugin(),
   ]
 }
