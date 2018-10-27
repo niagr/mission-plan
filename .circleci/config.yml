@@ -10,6 +10,7 @@ jobs:
           name: Build Frontend
           command: |
             cd frontend
+            npm install
             npm run build
       - run:
           name: Deploy to S3
