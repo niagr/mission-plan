@@ -94,15 +94,10 @@ LOGGING = {
         },
     },
     'handlers': {
-        'file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': '/opt/python/log/mission-plan.log',
-        },
         'console': {
             'class': 'logging.StreamHandler',
             'formatter': 'simple',
-            'level': 'DEBUG'
+            'level': 'ERROR'
         }
     },
     'loggers': {
