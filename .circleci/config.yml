@@ -32,7 +32,10 @@ jobs:
             # we work with wildcards so as to not interfere with hashes used for cache busting
             gzip frontend/dist/bundle*.js
             BUNDLE_FILENAME=$(basename $(ls frontend/dist/bundle*.js.gz))
-            aws s3 cp --content-encoding gzip frontend/dist/$BUNDLE_FILENAME s3://mission-plan-dev/$(basename $BUNDLE_FILENAME .gz)
+            # Client should cache the bundle forever, hash will change if content changes
+            aws s3 cp --content-encoding gzip --cache-control 'public, max-age=31536000' frontend/dist/$BUNDLE_FILENAME s3://mission-plan-dev/$(basename $BUNDLE_FILENAME .gz)
+            # Client should never cache index.html as it would contain the updated reference to the static files if they've changed
+            aws s3 cp --cache-control 'no-cache' frontend/dist/index.html s3://mission-plan-dev/index.html
       - run:
           name: Deploy to Beanstalk
           command: |
