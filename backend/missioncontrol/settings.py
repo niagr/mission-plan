@@ -123,6 +123,6 @@ USE_TZ = True
 
 STATIC_ROOT = os.path.join(os.path.dirname(__file__), 'staticfiles')
 
-STATIC_URL = '/static/'
+STATIC_URL = '/staticfiles/'
 
 CORS_ORIGIN_ALLOW_ALL = True
