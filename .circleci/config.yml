@@ -28,3 +28,8 @@ jobs:
           command: |
             sudo pip install awscli
             aws s3 sync frontend/dist/ s3://mission-plan-dev
+            # gzip bundle and upload to S3 without the .gz extension, with content-encoding 'gzip'
+            # we work with wildcards so as to not interfere with hashes used for cache busting
+            gzip frontend/dist/bundle*.js
+            BUNDLE_FILENAME=$(basename $(ls frontend/dist/bundle*.js.gz))
+            aws s3 cp --content-encoding gzip frontend/dist/$BUNDLE_FILENAME s3://mission-plan-dev/$(basename $BUNDLE_FILENAME .gz)
