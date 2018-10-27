@@ -11,5 +11,6 @@ import 'semantic-ui-css/components/card.min.css'
 import 'semantic-ui-css/components/modal.min.css'
 import 'semantic-ui-css/components/header.min.css'
 import 'semantic-ui-css/components/container.min.css'
+import 'semantic-ui-css/components/loader.min.css'
 
 ReactDom.render(<MainContainer/>, document.getElementById('app'))

@@ -43,8 +43,17 @@ export function globalError (e: Error) {
 export const LOAD_BOARDS = 'LOAD_BOARDS'
 export function loadBoards () {
   return async function (dispatch: Dispatch) {
-    const boards = await apiService.getBoards()
-    dispatch({type: LOAD_BOARDS, boards})
+    try {
+      const boards = await apiService.getBoards()
+      dispatch({type: LOAD_BOARDS, boards})
+    } catch (e) {
+      if (e instanceof APIError) {
+        console.log("BBBBB")
+        dispatch(globalError(e))
+      } else {
+        throw e
+      }
+    }
   }
 }
 

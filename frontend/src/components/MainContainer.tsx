@@ -17,7 +17,6 @@ class MainContainer extends React.Component {
       <Provider store={store}>
         <BrowserRouter>
           <Container>
-            {console.log('RENDERED MainContainer') as any && null}
             <Header/>
             <Content>
               <Route exact path="/" render={p => <BoardList/>} />

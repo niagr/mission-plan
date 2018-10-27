@@ -1,14 +1,14 @@
 import * as React from 'react'
-import {ReactNode} from 'react'
 import {Dispatch} from 'redux'
 import {connect} from 'react-redux'
+import { withRouter, RouteComponentProps } from 'react-router';
+import { Loader } from 'semantic-ui-react';
 
 import Board from './Board'
 
 import {State, STATUS} from 'types'
 import {loadTasks, changeTaskStatus} from 'store/actions'
 import ContainerComponent from './ContainerComponent';
-import { withRouter, RouteComponentProps } from 'react-router';
 
 
 interface BoardOwnProps {
@@ -40,12 +40,16 @@ class BoardContainer extends React.Component<BoardContainerProps> {
     const props = this.props
     return (
       <ContainerComponent didMount={props.onLoad}>
-        <Board 
-          tasks={props.tasks} 
-          statusColumns={props.statusColumns} 
-          onTaskDropped={props.onTaskStatusChanged}
-          onTaskClicked={taskId => props.history.push(`/board/${props.boardId}/task/${taskId}`)}
-        /> 
+        {!props.tasks.length ?
+          <Loader active />
+        : 
+          <Board 
+            tasks={props.tasks} 
+            statusColumns={props.statusColumns} 
+            onTaskDropped={props.onTaskStatusChanged}
+            onTaskClicked={taskId => props.history.push(`/board/${props.boardId}/task/${taskId}`)}
+          /> 
+        }
       </ContainerComponent>
     )
   }
