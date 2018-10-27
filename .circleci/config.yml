@@ -24,6 +24,8 @@ jobs:
             npm install
             npm run build
   deploy:
+    docker: # use the docker executor type; machine and macos executors are also supported
+      - image: circleci/python:3.6-stretch-browsers # the primary container, where your job's commands are run
     steps:
       - run:
           name: Deploy to S3
