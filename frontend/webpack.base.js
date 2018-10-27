@@ -4,6 +4,7 @@ const path = require('path')
 
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 
 module.exports = {
   entry: ['./src/index.tsx'],
@@ -51,5 +52,6 @@ module.exports = {
     new webpack.EnvironmentPlugin({
       API_URL: 'http://localhost:8000',
     }),
+    new BundleAnalyzerPlugin(),
   ]
 }
