@@ -26,5 +26,5 @@ jobs:
       - run:
           name: Deploy to S3
           command: |
-            sudo apt install awscli
+            sudo pip install awscli
             aws s3 sync frontend/dist/ s3://mission-plan-dev
