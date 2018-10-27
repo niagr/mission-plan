@@ -22,7 +22,7 @@ jobs:
           command: |
             cd frontend
             npm install
-            npm run build
+            API_URL=http://mission-plan-dev.us-east-2.elasticbeanstalk.com npm run build
       - run:
           name: Deploy to S3
           command: |
