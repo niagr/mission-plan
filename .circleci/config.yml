@@ -4,9 +4,11 @@ jobs:
     docker: # use the docker executor type; machine and macos executors are also supported
       - image: circleci/node:4.8.2 # the primary container, where your job's commands are run
     steps:
+      - checkout # check out the code in the project directory
       - run:
           name: Install Node
           command: |
+            pushd /tmp
             wget https://nodejs.org/download/release/v8.11.3/node-v8.11.3-linux-x64.tar.gz
             tar -xf node-v8.11.3-linux-x64.tar.gz
             sudo cp -r node-v8.11.3-linux-x64 /opt/
@@ -14,7 +16,7 @@ jobs:
             sudo ln -sf /opt/node-v8.11.3-linux-x64/bin/npm /usr/local/bin/
             node --version
             npm --version
-      - checkout # check out the code in the project directory
+            popd
       - run:
           name: Build Frontend
           command: |
