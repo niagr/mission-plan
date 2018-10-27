@@ -33,3 +33,16 @@ jobs:
             gzip frontend/dist/bundle*.js
             BUNDLE_FILENAME=$(basename $(ls frontend/dist/bundle*.js.gz))
             aws s3 cp --content-encoding gzip frontend/dist/$BUNDLE_FILENAME s3://mission-plan-dev/$(basename $BUNDLE_FILENAME .gz)
+      - run:
+          name: Deploy to Beanstalk
+          command: |
+            BEANSTALK_ZIP_S3_BUCKET=mission-plan-backend-beanstalk-bundles
+            BEANSTALK_REGION=us-east-2
+            BEANSTALK_APPLICATION_NAME=MissionPlan
+            BEANSTALK_ENV_NAME=MissionPlanDev
+            git archive --format zip master:backend > /tmp/mission-plan-backend.zip
+            aws s3 cp /tmp/mission-plan-backend.zip s3://$BEANSTALK_ZIP_S3_BUCKET/
+            aws elasticbeanstalk create-application-version --region $BEANSTALK_REGION --application-name $BEANSTALK_APPLICATION_NAME --version-label mission-plan-backend-circle-ci-$CIRCLE_BUILD_NUM --source-bundle S3Bucket="$BEANSTALK_ZIP_S3_BUCKET",S3Key="mission-plan-backend.zip"
+            aws elasticbeanstalk update-environment --region $BEANSTALK_REGION --application-name $BEANSTALK_APPLICATION_NAME --environment-name $BEANSTALK_ENV_NAME --version-label mission-plan-backend-circle-ci-$CIRCLE_BUILD_NUM
+
+
