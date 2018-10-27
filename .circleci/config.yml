@@ -6,3 +6,11 @@ jobs:
     steps:
       # - checkout # check out the code in the project directory
       - run: echo "hello world" # run the `echo` command
+      - run:
+          name: Build Frontend
+          command: |
+            cd frontend
+            npm run build
+      - run:
+          name: Deploy to S3
+          command: aws s3 sync frontend/dist/ s3://mission-plan-dev
