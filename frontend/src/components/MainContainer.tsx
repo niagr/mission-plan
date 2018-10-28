@@ -2,7 +2,7 @@ import * as React from  'react'
 import {Fragment} from  'react'
 import styled from 'styled-components'
 import {Provider} from 'react-redux'
-import {BrowserRouter, Route} from 'react-router-dom'
+import {BrowserRouter, Route, Switch} from 'react-router-dom'
 
 import BoardContainer from './BoardContainer'
 import BoardList from './BoardList'
@@ -26,14 +26,18 @@ class MainContainer extends React.Component {
                 render={p => 
                   <Fragment>
                     <BoardContainer boardId={p.match.params.boardId} />
-                    <Route 
-                      path={p.match.path + '/task/:taskId'} 
-                      render={p => <TaskViewContainer taskId={p.match.params.taskId} />} 
-                    />
-                    <Route
-                      path={p.match.path + '/task/new'}
-                      render={p => <NewTaskContainer/>}
-                    />
+                    <Route path={p.match.path + '/task'}>
+                      <Switch>
+                        <Route
+                          path={p.match.path + '/new'}
+                          render={p => <NewTaskContainer/>}
+                        />
+                        <Route 
+                          path={p.match.path + '/:taskId'} 
+                          render={p => <TaskViewContainer taskId={p.match.params.taskId} />} 
+                        />
+                      </Switch>
+                    </Route>
                   </Fragment>
                 }
               />
