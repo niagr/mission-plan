@@ -41,7 +41,7 @@ jobs:
           command: |
             BEANSTALK_ZIP_S3_BUCKET=mission-plan-backend-beanstalk-bundles
             BEANSTALK_ZIP_NAME=mission-plan-backend-$CIRCLE_BUILD_NUM.zip
-            BEANSTALK_REGION=us-east-2
+            BEANSTALK_REGION=us-east-1
             BEANSTALK_APPLICATION_NAME=MissionPlan
             BEANSTALK_ENV_NAME=MissionPlanDev
             BEANSTALK_VERSION_LABEL=mission-plan-backend-$CIRCLE_BUILD_NUM
