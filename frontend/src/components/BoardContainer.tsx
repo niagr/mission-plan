@@ -2,7 +2,7 @@ import * as React from 'react'
 import {Dispatch} from 'redux'
 import {connect} from 'react-redux'
 import { withRouter, RouteComponentProps } from 'react-router';
-import { Loader } from 'semantic-ui-react';
+import { Loader, Button } from 'semantic-ui-react';
 
 import Board from './Board'
 
@@ -40,6 +40,7 @@ class BoardContainer extends React.Component<BoardContainerProps> {
     const props = this.props
     return (
       <ContainerComponent didMount={props.onLoad}>
+        <NewTaskButton onClick={() => props.history.push(`/board/${props.boardId}/task/new`)}/>
         {!props.tasks.length ?
           <Loader active />
         : 
@@ -54,6 +55,15 @@ class BoardContainer extends React.Component<BoardContainerProps> {
     )
   }
 }
+
+const NewTaskButton = ({children, onClick}: {children?: React.ReactChild, onClick: () => void}) =>
+  <Button 
+    primary 
+    onClick={onClick}
+  >
+    {children || 'New Task'}
+  </Button>
+
 
 
 export default connect(mapStateToProps, mapDispatchToProps)(withRouter(BoardContainer))

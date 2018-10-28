@@ -10,6 +10,7 @@ import Header from './Header'
 
 import {store} from 'store'
 import TaskViewContainer from './TaskViewContainer';
+import NewTaskContainer from './NewTaskContainer';
 
 class MainContainer extends React.Component {
   render () {
@@ -21,13 +22,17 @@ class MainContainer extends React.Component {
             <Content>
               <Route exact path="/" render={p => <BoardList/>} />
               <Route 
-                path="/board/:boardId" 
+                path="/board/:boardId"
                 render={p => 
                   <Fragment>
                     <BoardContainer boardId={p.match.params.boardId} />
                     <Route 
                       path={p.match.path + '/task/:taskId'} 
                       render={p => <TaskViewContainer taskId={p.match.params.taskId} />} 
+                    />
+                    <Route
+                      path={p.match.path + '/task/new'}
+                      render={p => <NewTaskContainer/>}
                     />
                   </Fragment>
                 }
