@@ -39,11 +39,11 @@ jobs:
       - run:
           name: Deploy to Beanstalk
           command: |
-            BEANSTALK_REGION=us-east-1
+            BEANSTALK_REGION=us-east-2
             BEANSTALK_ZIP_S3_BUCKET=mission-plan-beanstalk-$BEANSTALK_REGION
             BEANSTALK_ZIP_NAME=mission-plan-backend-$CIRCLE_BUILD_NUM.zip
             BEANSTALK_APPLICATION_NAME=MissionPlan
-            BEANSTALK_ENV_NAME=MissionPlanDev
+            BEANSTALK_ENV_NAME=MissionPlan-Dev
             BEANSTALK_VERSION_LABEL=mission-plan-backend-$CIRCLE_BUILD_NUM
             git archive --format zip master:backend > /tmp/$BEANSTALK_ZIP_NAME
             aws s3 cp --region=$BEANSTALK_REGION /tmp/$BEANSTALK_ZIP_NAME s3://$BEANSTALK_ZIP_S3_BUCKET/
