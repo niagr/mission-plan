@@ -46,7 +46,7 @@ jobs:
             BEANSTALK_ENV_NAME=MissionPlanDev
             BEANSTALK_VERSION_LABEL=mission-plan-backend-$CIRCLE_BUILD_NUM
             git archive --format zip master:backend > /tmp/$BEANSTALK_ZIP_NAME
-            aws s3 cp /tmp/$BEANSTALK_ZIP_NAME s3://$BEANSTALK_ZIP_S3_BUCKET/
+            aws s3 cp --region=$BEANSTALK_REGION /tmp/$BEANSTALK_ZIP_NAME s3://$BEANSTALK_ZIP_S3_BUCKET/
             aws elasticbeanstalk create-application-version --region $BEANSTALK_REGION --application-name $BEANSTALK_APPLICATION_NAME --version-label $BEANSTALK_VERSION_LABEL --source-bundle S3Bucket="$BEANSTALK_ZIP_S3_BUCKET",S3Key="$BEANSTALK_ZIP_NAME"
             aws elasticbeanstalk update-environment --region $BEANSTALK_REGION --application-name $BEANSTALK_APPLICATION_NAME --environment-name $BEANSTALK_ENV_NAME --version-label $BEANSTALK_VERSION_LABEL
 
