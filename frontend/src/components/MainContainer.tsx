@@ -26,7 +26,7 @@ class MainContainer extends React.Component {
                 render={p => 
                   <Fragment>
                     <BoardContainer boardId={p.match.params.boardId} />
-                    <Route path={p.match.path + '/task'}>
+                    <Route path={p.match.path + '/task'} render={p => 
                       <Switch>
                         <Route
                           path={p.match.path + '/new'}
@@ -37,7 +37,7 @@ class MainContainer extends React.Component {
                           render={p => <TaskViewContainer taskId={p.match.params.taskId} />} 
                         />
                       </Switch>
-                    </Route>
+                    }/>
                   </Fragment>
                 }
               />
