@@ -68,7 +68,7 @@ class TaskAPIView(APIView):
             return APIResponse(status=404, user_msg='Task not found')
 
     @staticmethod
-    def put(request, task_id):
+    def put(request, board_id, task_id):
         """
         Modify a task.
         POST params: name, desc, status

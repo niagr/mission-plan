@@ -1,19 +1,33 @@
 import * as React from 'react'
-import {connect} from 'react-redux'
+import { connect } from 'react-redux'
+import { withRouter, RouteComponentProps } from 'react-router-dom';
+import { Modal } from 'semantic-ui-react';
 
 import ContainerComponent from './ContainerComponent'
-import TaskView from './TaskView'
+import TaskView, { FieldName } from './TaskView'
 
-import {Task, State, STATUS} from 'types'
-import { Modal } from 'semantic-ui-react';
-import { withRouter, RouteComponentProps } from 'react-router-dom';
+import { Task, State } from 'types'
+import { changeTaskData } from 'store/actions';
+import { Dispatch } from 'redux';
 
 
-interface TaskContainerProps extends RouteComponentProps {
-  task?: Task
+const FieldNameToTaskProperty = {
+  [FieldName.NAME]: 'name',
+  [FieldName.DESC]: 'desc',
 }
 
-const TaskContainer = ({task, history}: TaskContainerProps) =>
+interface TaskViewContainerOwnProps {
+  taskId: number
+  boardId: number
+}
+
+interface TaskContainerProps extends RouteComponentProps, 
+                                     ReturnType<typeof mapStateToProps>, 
+                                     ReturnType<typeof mapDispatchToProps>,
+                                     TaskViewContainerOwnProps
+{}
+
+const TaskViewContainer = ({task, history, changeTaskData}: TaskContainerProps) =>
   task ?
     <ContainerComponent>
       <Modal 
@@ -21,16 +35,31 @@ const TaskContainer = ({task, history}: TaskContainerProps) =>
         onClose={() => history.goBack()}
       >
         <Modal.Content>
-          <TaskView name={task.name} desc={task.desc} />
+          <TaskView 
+            name={task.name} 
+            desc={task.desc} 
+            onFieldChanged={(fieldName, value) => {
+              if (value) {
+                changeTaskData({[FieldNameToTaskProperty[fieldName]]: value})
+              }
+            }
+            } 
+          />
         </Modal.Content>
       </Modal>
     </ContainerComponent>
   : null
 
-function mapStateToProps (state: State, props: {taskId: number}) {
+function mapStateToProps (state: State, props: TaskViewContainerOwnProps) {
   return {
     task: state.tasks.find(t => t.id == props.taskId)
   }
 }
 
-export default connect(mapStateToProps)(withRouter(TaskContainer))
+function mapDispatchToProps (dispatch: Dispatch, props: TaskViewContainerOwnProps) {
+  return {
+    changeTaskData: (taskData: Partial<Task>) => dispatch(changeTaskData(props.boardId, props.taskId, taskData) as any)
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(TaskViewContainer))

@@ -23,21 +23,24 @@ class MainContainer extends React.Component {
               <Route exact path="/" render={p => <BoardList/>} />
               <Route 
                 path="/board/:boardId"
-                render={p => 
+                render={({match: {path, params: {boardId}}}) => 
                   <Fragment>
-                    <BoardContainer boardId={p.match.params.boardId} />
-                    <Route path={p.match.path + '/task'} render={p => 
-                      <Switch>
-                        <Route
-                          path={p.match.path + '/new'}
-                          render={p => <NewTaskContainer/>}
-                        />
-                        <Route 
-                          path={p.match.path + '/:taskId'} 
-                          render={p => <TaskViewContainer taskId={p.match.params.taskId} />} 
-                        />
-                      </Switch>
-                    }/>
+                    <BoardContainer boardId={boardId} />
+                    <Route 
+                      path={path + '/task'} 
+                      render={({match: {path}}) => 
+                        <Switch>
+                          <Route
+                            path={path + '/new'}
+                            render={p => <NewTaskContainer/>}
+                          />
+                          <Route 
+                            path={path + '/:taskId'} 
+                            render={({match: {params: {taskId}}}) => <TaskViewContainer taskId={taskId} boardId={boardId} />} 
+                          />
+                        </Switch>
+                      }
+                    />
                   </Fragment>
                 }
               />

@@ -1,3 +1,5 @@
+import { Task } from "types";
+
 enum METHOD {
     POST = 'POST',
     GET = 'GET',
@@ -35,7 +37,7 @@ class APIService {
         try {
             const response = await fetch(this.rootUrl + url, {
                 method,
-                body: method == 'POST' ? this._fillFormData(data) : undefined,
+                body: [METHOD.POST, METHOD.PUT].includes(method) ? this._fillFormData(data) : undefined,
             })
             const respData = await response.json()
             respData.userMsg = respData.userMsg || this.defaultErrMsg
@@ -65,6 +67,10 @@ class APIService {
 
     async getTask (boardId: number, taskId: number) {
         return (await this._apiCall(METHOD.GET, `/board/${boardId}/task/${taskId}/`)).task
+    }
+
+    async changeTask (boardId: number, taskId: number, taskData: Partial<Task>) {
+        return (await this._apiCall(METHOD.PUT, `/board/${boardId}/task/${taskId}/`, taskData)).task
     }
 
 }

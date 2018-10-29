@@ -5,10 +5,10 @@ import EditableText, {EditableTextProps} from "./EditableText";
 interface TaskViewProps {
   name?: string
   desc?: string
-  handleNameChanged?: (newName: string) => void
+  onFieldChanged?: <F extends FieldName>(fieldName: F, value?: FieldValueTypes[F]) => void
 }
 
-enum FieldName {
+export enum FieldName {
   NAME,
   DESC,
 }
@@ -33,6 +33,7 @@ export default class TaskView extends React.Component<TaskViewProps, TaskViewSta
   }
 
   handleFieldValueSubmit = <T extends FieldName>(fieldName: T, value?: FieldValueTypes[T]) => {
+    this.props.onFieldChanged && this.props.onFieldChanged(fieldName, value)
     this.setState({
       ...this.state,
       fieldEdits: {

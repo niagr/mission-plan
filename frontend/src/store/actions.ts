@@ -65,3 +65,15 @@ export function loadTask(boardId: number, taskId: number) {
     dispatch({type: LOAD_TASK, task})
   }
 }
+
+export const CHANGE_TASK_DATA = 'CHANGE_TASK_DATA'
+export function changeTaskData(boardId: number, taskId: number, taskData: Partial<Task>) {
+  return async function (dispatch: Dispatch) {
+    try {
+      const changedTask = await apiService.changeTask(boardId, taskId, taskData)
+      dispatch({type: CHANGE_TASK_DATA, changedTask})
+    } catch (e) {
+      dispatch(globalError(e))
+    }
+  }
+}
