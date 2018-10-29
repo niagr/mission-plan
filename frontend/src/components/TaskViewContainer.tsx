@@ -6,21 +6,26 @@ import TaskView from './TaskView'
 
 import {Task, State, STATUS} from 'types'
 import { Modal } from 'semantic-ui-react';
-import { withRouter } from 'react-router-dom';
-import {History} from 'history'
+import { withRouter, RouteComponentProps } from 'react-router-dom';
 
 
-const TaskContainer = ({task, history}: {task?: Task, history: History}) =>
-  <ContainerComponent>
-    <Modal 
-      open basic
-      onClose={() => history.goBack()}
-    >
-      <Modal.Content>
-        <TaskView name={task && task.name} desc={task && task.desc} />
-      </Modal.Content>
-    </Modal>
-  </ContainerComponent>
+interface TaskContainerProps extends RouteComponentProps {
+  task?: Task
+}
+
+const TaskContainer = ({task, history}: TaskContainerProps) =>
+  task ?
+    <ContainerComponent>
+      <Modal 
+        open basic
+        onClose={() => history.goBack()}
+      >
+        <Modal.Content>
+          <TaskView name={task.name} desc={task.desc} />
+        </Modal.Content>
+      </Modal>
+    </ContainerComponent>
+  : null
 
 function mapStateToProps (state: State, props: {taskId: number}) {
   return {
@@ -28,4 +33,4 @@ function mapStateToProps (state: State, props: {taskId: number}) {
   }
 }
 
-export default connect(mapStateToProps)(withRouter<any>(TaskContainer))
+export default connect(mapStateToProps)(withRouter(TaskContainer))
