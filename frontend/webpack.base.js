@@ -10,6 +10,7 @@ function createConfig (options={}) {
 
   const {
     outputFilename = 'bundle.js',
+    fileOutputName = '[name].[ext]',
     ...merge  // extra top-level keys to merge into the config
   } = options
 
@@ -44,7 +45,7 @@ function createConfig (options={}) {
             {
               loader: 'file-loader',
               options: {
-                name: '[name].[ext]',
+                name: fileOutputName,
                 outputPath: 'assets/'
               }
             }
