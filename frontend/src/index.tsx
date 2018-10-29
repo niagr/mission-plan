@@ -13,5 +13,8 @@ import 'semantic-ui-css/components/header.min.css'
 import 'semantic-ui-css/components/container.min.css'
 import 'semantic-ui-css/components/loader.min.css'
 import 'semantic-ui-css/components/button.min.css'
+import 'semantic-ui-css/components/input.min.css'
+import 'semantic-ui-css/components/form.min.css'
+import 'semantic-ui-css/components/label.min.css'
 
 ReactDom.render(<MainContainer/>, document.getElementById('app'))
