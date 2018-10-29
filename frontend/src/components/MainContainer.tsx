@@ -12,6 +12,8 @@ import {store} from 'store'
 import TaskViewContainer from './TaskViewContainer';
 import NewTaskContainer from './NewTaskContainer';
 
+import bgTextureImg from 'assets/img/dust_scratches.png'
+
 class MainContainer extends React.Component {
   render () {
     return (
@@ -61,7 +63,9 @@ const Container = styled.div`
 `
 
 const Content = styled.div`
+  flex: 1;
   padding: 20px;
+  background-image: url(${bgTextureImg})
 `
 
 export default MainContainer
