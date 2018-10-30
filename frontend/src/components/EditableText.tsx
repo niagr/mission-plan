@@ -10,6 +10,8 @@ export interface EditableTextProps {
 interface EditableTextState {
   editable: boolean
   value?: EditableTextProps['value']
+  ctrlPressed: boolean
+  enterPressed: boolean
 }
 
 function editable() {
@@ -19,7 +21,9 @@ function editable() {
       super(props)
       this.state = {
         editable: false,
-        value: props.value
+        value: props.value,
+        ctrlPressed: false,
+        enterPressed: false,
       }
     }
 
@@ -38,8 +42,30 @@ function editable() {
       this.props.onSubmit && this.props.onSubmit(this.getValue())
     }
 
+    handleKeyDown = (e: React.KeyboardEvent) => {
+      switch (e.key) {
+        case 'Control': this.setState({ctrlPressed: true}); break;
+        case 'Enter': this.setState({enterPressed: true}); break;        
+      }
+    }
+
+    handleKeyUp = (e: React.KeyboardEvent) => {
+      switch (e.key) {
+        case 'Control': this.setState({ctrlPressed: false}); break;
+        case 'Enter': this.setState({enterPressed: false}); break;        
+      }
+    }
+
     getValue (): EditableTextProps['value'] {
       return this.props.onChange != undefined ? this.props.value : this.state.value
+    }
+
+    componentDidUpdate () {
+      const {ctrlPressed, enterPressed} = this.state
+      if (ctrlPressed && enterPressed) {
+        this.setState({ctrlPressed: false, enterPressed: false})
+        this.handleBlur()
+      }
     }
   
     render () {
@@ -49,10 +75,11 @@ function editable() {
       return (
         <div 
           onClick={() => this.setState({editable: true})} 
-          onBlur={this.handleBlur} 
+          onBlur={this.handleBlur}
+          onKeyDown={this.handleKeyDown}
         >
             {editable ?
-              <Form>
+              <Form style={{margin: 0}}>
                 <TextArea
                   value={value} 
                   onChange={this.handleChange} 

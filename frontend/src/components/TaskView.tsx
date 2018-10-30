@@ -69,7 +69,7 @@ export default class TaskView extends React.Component<TaskViewProps, TaskViewSta
 const Field = (props: EditableTextProps) =>
   <EditableText {...props}>
     <FieldWrapper>
-      <pre>{props.value}</pre>
+      <pre style={{margin: 0}}>{props.value}</pre>
     </FieldWrapper>
   </EditableText>
 
@@ -81,7 +81,7 @@ const NameField = (props: EditableTextProps) =>
   </EditableText>
 
 const FieldWrapper = styled.div`
-  padding: 5px;
+  /* padding: 5px; */
   border-radius: 2px;
   &:hover {
     background: #f5f2f2;
