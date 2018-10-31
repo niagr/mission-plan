@@ -1,71 +1,84 @@
 import * as React from  'react'
-import {Fragment} from  'react'
-import styled from 'styled-components'
-import {Provider} from 'react-redux'
-import {BrowserRouter, Route, Switch} from 'react-router-dom'
 
-import BoardContainer from './BoardContainer'
-import BoardList from './BoardList'
-import Header from './Header'
+import {MainContext, Provider} from './context'
+import App from './App'
 
-import {store} from 'store'
-import TaskViewContainer from './TaskViewContainer';
-import NewTaskContainer from './NewTaskContainer';
+import {STATUS, Task} from 'types'
+import {apiService, APIError} from 'services/api'
 
-import bgTextureImg from 'assets/img/dust_scratches.png'
 
-class MainContainer extends React.Component {
+class MainContainer extends React.Component<{}, MainContext> {
+
+  constructor (props: {}) {
+    super(props)
+    this.state = {
+      statusColumns: [STATUS.PENDING, STATUS.IN_PROGRESS, STATUS.REVIEW, STATUS.DONE],
+      boards: [],
+      tasks: [],
+      currentBoard: undefined,
+      error: undefined,
+      loadTasks: this.loadTasks,
+      loadBoards: this.loadBoards,
+      changeTaskStatus: this.changeTaskStatus,
+      changeTaskData: this.changeTaskData
+    }
+  }
+
+  handleError (error: Error) {
+    this.setState({error: error.message})
+  }
+
+  handleAPIError (e: APIError) {
+    if (e instanceof APIError) {
+      this.handleError(e)
+    } else {
+      throw e
+    }
+  }
+
+  loadBoards = async () => {
+    try {
+      const boards = await apiService.getBoards()
+      this.setState({boards})
+    } catch (e) {
+      this.handleAPIError(e)
+    }
+  }
+
+  loadTasks = async (boardId: number) => {
+    try {
+      const tasks = await apiService.getTasks(boardId)
+      this.setState({tasks})
+    } catch (e) {
+      this.handleAPIError(e)
+    }
+  }
+
+  changeTaskData = async (boardId: number, taskId: number, taskData: Partial<Task>) => {
+    try {
+      const changedTask = await apiService.changeTask(boardId, taskId, taskData)
+      this.setState({
+        tasks: this.state.tasks.map(task => task.id == taskId ? changedTask: task)
+      })
+    } catch (e) {
+      this.handleAPIError(e)
+    }
+  }
+
+  changeTaskStatus = async (taskId: number, status: STATUS) => {
+    this.setState({
+      tasks: this.state.tasks.map(task => task.id == taskId ? {...task, status}: task)
+    })
+  }
+
   render () {
     return (
-      <Provider store={store}>
-        <BrowserRouter>
-          <Container>
-            <Header/>
-            <Content>
-              <Route exact path="/" render={p => <BoardList/>} />
-              <Route 
-                path="/board/:boardId"
-                render={({match: {path, params: {boardId}}}) => 
-                  <Fragment>
-                    <BoardContainer boardId={boardId} />
-                    <Route 
-                      path={path + '/task'} 
-                      render={({match: {path}}) => 
-                        <Switch>
-                          <Route
-                            path={path + '/new'}
-                            render={p => <NewTaskContainer/>}
-                          />
-                          <Route 
-                            path={path + '/:taskId'} 
-                            render={({match: {params: {taskId}}}) => <TaskViewContainer taskId={taskId} boardId={boardId} />} 
-                          />
-                        </Switch>
-                      }
-                    />
-                  </Fragment>
-                }
-              />
-            </Content>
-          </Container>
-        </BrowserRouter>
+      <Provider value={this.state} >
+        <App/>
       </Provider>
     )
   }
 }
 
-const Container = styled.div`
-    height: 100vh;
-    width: 100vw;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-`
-
-const Content = styled.div`
-  flex: 1;
-  padding: 20px;
-  background-image: url(${bgTextureImg})
-`
 
 export default MainContainer

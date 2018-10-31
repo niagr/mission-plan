@@ -5,7 +5,6 @@ import {DragDropContext, DragSource, DropTarget, DragSourceCollector, ConnectDra
 import HTML5Backend from 'react-dnd-html5-backend'
 
 import {Task, STATUS, State, anyobject} from 'types'
-import {changeTaskStatus, loadTasks} from 'store/actions'
 
 import TaskCard from './TasksCard'
 
