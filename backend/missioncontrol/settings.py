@@ -71,6 +71,15 @@ TEMPLATES = [
     },
 ]
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+       'missioncontrol.authentication.JWTTokenAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+       'rest_framework.permissions.IsAuthenticated',
+    )
+}
+
 WSGI_APPLICATION = 'missioncontrol.wsgi.application'
 
 
@@ -155,3 +164,9 @@ STATIC_ROOT = os.path.join(os.path.dirname(__file__), 'staticfiles')
 STATIC_URL = '/staticfiles/'
 
 CORS_ORIGIN_ALLOW_ALL = True
+
+
+# APPLICATION ENVIRONMENT VARIABLES
+
+GITHUB_OAUTH_CLIENT_ID = os.environ.get('GITHUB_OAUTH_CLIENT_ID')
+GITHUB_OAUTH_CLIENT_SECRET = os.environ.get('GITHUB_OAUTH_CLIENT_SECRET')

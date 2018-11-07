@@ -1,6 +1,6 @@
 import re
-import uuid
 
+from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models, IntegrityError
 
@@ -47,6 +47,15 @@ class Board(models.Model):
     def to_json(self):
         return {'id': self.id,
                 'name': self.name}
+
+
+class BoardAccess(models.Model):
+    user = models.OneToOneField(to=User, on_delete=models.CASCADE)
+    board = models.ForeignKey(to=Board, on_delete=models.CASCADE)
+
+    @classmethod
+    def give_user_access_to_board(cls, user: User, board: Board):
+        cls.objects.create(user=user, board=board)
 
 
 class Task(models.Model):

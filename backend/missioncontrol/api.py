@@ -1,23 +1,75 @@
+import jwt
+import requests
+from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
-from rest_framework.decorators import api_view
+from django.middleware.csrf import rotate_token
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response as DRFResponse
 from rest_framework.views import APIView
 
-from .models import Task, Board
+from .models import Task, Board, User
 
 
 class APIResponse(DRFResponse):
     """All API responses must use this class instead of Response"""
-    def __init__(self, *, data=None, user_msg=None, **kwargs):
+    def __init__(self, *, data=None, user_msg=None, cookies=None, **kwargs):
         data = data or {}
         if user_msg:
             data['userMsg'] = user_msg
         super().__init__(data=data, **kwargs)
+        cookies = cookies or []
+        for cookie in cookies:
+            self.set_cookie(**cookie)
 
 
 @api_view(['GET'])
 def health_check(request):
     return APIResponse(status=200)
+
+
+@api_view(['POST'])
+@authentication_classes([])
+@permission_classes([])
+def github_login(request):
+    """
+    Get's a user's Github email, creates a new user or retrieves the existing user,
+    and creates a JWT for the user. It also creates a new CSRF token and sets the cookie for it.
+    The JWT is set as an httponly cookie.
+    Accepts the Github OAuth authorization code and the state token we sent it.
+    """
+    code = request.POST.get('code')
+    state = request.POST.get('state')
+    if not (code and state):
+        return APIResponse(status=400, user_msg="The 'code' and 'state' params are required.")
+
+    # Fetch the OAuth access token
+    resp = requests.post('https://github.com/login/oauth/access_token',
+                         data={'client_id': settings.GITHUB_OAUTH_CLIENT_ID,
+                               'client_secret': settings.GITHUB_OAUTH_CLIENT_SECRET,
+                               'code': code,
+                               'state': state},
+                         headers={'Accept': 'application/json'})
+    data = resp.json()
+    access_token = data.get('access_token')
+
+    # Use access token to fetch user email
+    resp = requests.get(f'https://api.github.com/user/emails?access_token={access_token}')
+    data = resp.json()
+    email = data[0].get('email')
+
+    # Get or create user with corresponding email
+    user = User.objects.filter(username=email, email=email).first()
+    if not user:
+        user = User.objects.create_user(username=email, email=email)
+
+    # create JWT
+    token = jwt.encode({'id': user.id, 'email': user.email}, settings.SECRET_KEY)
+
+    # We create a new CSRF token (which is set in a cookie automatically by CSRFViewMiddleware).
+    rotate_token(request)
+
+    # Set JWT as an httponly cookie
+    return APIResponse(status=200, cookies=[{'key': 'authToken', 'value': token.decode(), 'httponly': True}])
 
 
 class TaskListAPIView(APIView):

@@ -1,0 +1,4 @@
+from .settings import *
+
+GITHUB_OAUTH_CLIENT_ID = os.environ.get('GITHUB_OAUTH_CLIENT_ID', '50b5c3bbfe1a09d6ecf3')
+GITHUB_OAUTH_CLIENT_SECRET = os.environ.get('GITHUB_OAUTH_CLIENT_SECRET', '3e8d0bd48a003c11c018d3217b9628bacec0370d')

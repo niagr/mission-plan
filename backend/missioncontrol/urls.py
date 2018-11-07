@@ -28,6 +28,7 @@ board_api_urls = [
 api_urls = [
     path('boards/', api.BoardListAPIView.as_view()),
     path('board/<int:board_id>/', include(board_api_urls)),
+    path('login/github/', api.github_login),
 ]
 
 urlpatterns = [
