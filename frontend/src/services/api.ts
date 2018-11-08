@@ -1,3 +1,5 @@
+import * as Cookies from 'js-cookie'
+
 import { Task } from "types";
 
 enum METHOD {
@@ -37,7 +39,9 @@ class APIService {
         try {
             const response = await fetch(this.rootUrl + url, {
                 method,
+                credentials: 'include',
                 body: [METHOD.POST, METHOD.PUT].includes(method) ? this._fillFormData(data) : undefined,
+                headers: {'X-CSRFToken': Cookies.get('csrftoken') || ''}
             })
             const respData = await response.json()
             respData.userMsg = respData.userMsg || this.defaultErrMsg
@@ -53,6 +57,19 @@ class APIService {
             } else {
                 throw e
             }
+        }
+    }
+
+    async login (authCode: string, state: string) {
+        const resp = await fetch(this.rootUrl + '/login/github/', {
+            method: METHOD.POST,
+            body: this._fillFormData({code: authCode, state: state}),
+            credentials: 'include'
+        })
+        if (resp.ok) {
+            return true
+        } else {
+            return false
         }
     }
 

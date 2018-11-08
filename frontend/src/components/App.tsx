@@ -9,6 +9,7 @@ import BoardList from './BoardList'
 import Header from './Header'
 import TaskViewContainer from './TaskViewContainer';
 import NewTaskContainer from './NewTaskContainer';
+import Login from './Login'
 
 import bgTextureImg from 'assets/img/dust_scratches.png'
 
@@ -40,6 +41,10 @@ const App = () =>
               />
             </Fragment>
           }
+        />
+        <Route 
+          path="/oauth/github"
+          render={() => <Login/>}
         />
       </Content>
     </Container>
